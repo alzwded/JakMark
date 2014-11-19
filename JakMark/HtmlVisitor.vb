@@ -28,7 +28,7 @@ Public Class HtmlVisitor
             _stream.WriteLine("<title>{0}</title>", _title)
         End If
         _stream.WriteLine("<style>{0}</style>",
-                          "code { font-family: monospace; white-space: pre-wrap; } .footnote { vertical-align: super; font-size: 50%; }")
+                          "code { font-family: monospace; white-space: pre-wrap; } .footnote { vertical-align: super; font-size: 50%; } .small_permalink { font-size: 50% ; text-decoration: none; color: black}")
         _stream.WriteLine("</head>")
         _stream.WriteLine("<body>")
     End Sub
@@ -103,7 +103,7 @@ Public Class HtmlVisitor
     End Function
 
     Public Sub Visit(node As Heading) Implements IVisitor.Visit
-        _stream.WriteLine("<h{0} id=""{2}"">{1}</h{0}>", node.Level, node.Text, ExtractHeadingId(node.Text))
+        _stream.WriteLine("<h{0} id=""{2}"">{1}<a class=""small_permalink"" href=""#{2}"">&nbsp;&nbsp;&#8734;</a></h{0}>", node.Level, node.Text, ExtractHeadingId(node.Text))
     End Sub
 
     Public Sub Visit(node As Link) Implements IVisitor.Visit
