@@ -19,6 +19,10 @@ You can talk about \!<list>* s\! without having them rendered by escaping them w
 
 ```
 This is fenced.		And you can do whatever you like.
+
+Fenced
+	  Fenced
+	        Fenced
 ```
 
 <table>

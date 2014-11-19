@@ -38,7 +38,7 @@ Public Class HtmlVisitor
             _stream.WriteLine("<hr>")
         End If
         For Each li In list
-            _stream.WriteLine("<p>{0}. {1} <a href=""fnref:#{0}"">Back</a></p>", li.Key, li.Value)
+            _stream.WriteLine("<p id=""fn:{0}"">{0}. {1} <a href=""#fnref:{0}"">Back</a></p>", li.Key, li.Value)
         Next
 
         _stream.WriteLine("</body></html>")
@@ -127,7 +127,7 @@ Public Class HtmlVisitor
     End Sub
 
     Public Sub Visit(node As PlainText) Implements IVisitor.Visit
-        _stream.Write(node.Text & " ")
+        _stream.Write(node.Text)
     End Sub
 
     Public Sub Visit(node As Table) Implements IVisitor.Visit
@@ -154,12 +154,16 @@ Public Class HtmlVisitor
     End Sub
 
     Public Sub Visit(node As Paragraph) Implements IVisitor.Visit
-        _stream.WriteLine("<p>")
+        _stream.Write("<p>")
         node.Stuff.Accept(Me)
         _stream.WriteLine("</p>")
     End Sub
 
     Public Sub Visit(node As LiteralLF) Implements IVisitor.Visit
         _stream.WriteLine("<br/>")
+    End Sub
+
+    Public Sub Visit(node As Whitespace) Implements IVisitor.Visit
+        _stream.Write(" ")
     End Sub
 End Class

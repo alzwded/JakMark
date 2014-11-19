@@ -78,7 +78,7 @@
         Loop
 
         Dim collection = New Container()
-        Do Until _tokens.First().Type <> Token.TokenType.LineFeed
+        Do Until _tokens.First().Type = Token.TokenType.LineFeed
             collection.Children.Add(ParseNext())
         Loop
         _tokens.Remove(_tokens.First())
@@ -250,9 +250,6 @@
         list.Numbered = (_tokens.First().Type = Token.TokenType.Hash)
 
         Do
-            Do While _tokens.First().Type = Token.TokenType.Whitespace
-                _tokens.Remove(_tokens.First())
-            Loop
             If _tokens.First().Type = Token.TokenType.ListClose Then Exit Do
             If _tokens.First().Type = Token.TokenType.Hash OrElse
                 _tokens.First().Type = Token.TokenType.Dash Then
@@ -294,9 +291,8 @@
                     _tokens.Remove(tok)
                     Return New PlainText(tok.Text)
                 Case Token.TokenType.Whitespace
-                    Do While _tokens.First().Type = Token.TokenType.Whitespace
-                        _tokens.Remove(_tokens.First())
-                    Loop
+                    _tokens.Remove(tok)
+                    Return New Whitespace()
                 Case Token.TokenType.CommentOpen
                     ConsumeComment()
                 Case Token.TokenType.Escape
@@ -346,6 +342,10 @@
     Private Function ParseParagraph() As ITreeNode
         Dim collection = New Container
 
+        REM purge initial whitespace
+        Do While _tokens.First().Type = Token.TokenType.Whitespace
+            _tokens.Remove(_tokens.First())
+        Loop
         If _tokens.First().Type = Token.TokenType.LineFeed Then
             _tokens.Remove(_tokens.First())
             Return collection
@@ -364,6 +364,7 @@
         Do While _tokens.Count > 0
             Select Case _tokens.First().Type
                 Case Token.TokenType.Whitespace
+                    ret.Children.Add(New Whitespace())
                     _tokens.Remove(_tokens.First())
                 Case Token.TokenType.Hash
                     ret.Children.Add(ParseHeading())
