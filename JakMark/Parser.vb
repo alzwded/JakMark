@@ -27,6 +27,8 @@ Structure Token
         DoubleSpace
         Dash
         Text
+        CommentOpen
+        CommentClose
     End Enum
 
     Public Type As TokenType
@@ -51,7 +53,7 @@ Public Class Parser
 
     Public Sub New(sw As TextReader)
         _stream = sw
-        Parse()
+        Tokenize()
     End Sub
 
     Private Sub Tokenize()
@@ -77,7 +79,9 @@ Public Class Parser
             {"</table>", Token.TokenType.TableClose},
             {"<list>", Token.TokenType.ListOpen},
             {"-", Token.TokenType.Dash},
-            {"</list>", Token.TokenType.ListClose}
+            {"</list>", Token.TokenType.ListClose},
+            {"<!--", Token.TokenType.CommentOpen},
+            {"-->", Token.TokenType.CommentClose}
             }
         Dim matchingTokens() = {Token.TokenType.Fence, Token.TokenType.Backtick, _
                                 Token.TokenType.Escape, Token.TokenType.Star,
@@ -88,7 +92,8 @@ Public Class Parser
                 {Token.TokenType.Note, "]"},
                 {Token.TokenType.NoteRefOpen, "]:"},
                 {Token.TokenType.RefOpen, "]:"},
-                {Token.TokenType.LParenOpen, ")"}
+                {Token.TokenType.LParenOpen, ")"},
+                {Token.TokenType.CommentOpen, "-->"}
                 }
 
         _tokens = New List(Of Token)
@@ -195,8 +200,45 @@ Public Class Parser
         Loop
     End Sub
 
-    Private Sub Parse()
-        Tokenize()
+    Private Function ParseHeading() As ITreeNode
+
+    End Function
+
+    Private Function ParseRef() As ITreeNode
+
+    End Function
+
+    Private Function ParseNoteRef() As ITreeNode
+
+    End Function
+
+    Private Function ParseParagraph() As ITreeNode
+
+    End Function
+
+    Private Function ParseEntryLevel() As ITreeNode
+        Dim ret = New Container
+
+        Do While _tokens.Count > 0
+            Select Case _tokens.First().Type
+                Case Token.TokenType.Whitespace
+                    _tokens.Remove(_tokens.First())
+                Case Token.TokenType.Hash
+                    ret.Children.Add(ParseHeading())
+                Case Token.TokenType.RefOpen
+                    ret.Children.Add(ParseRef())
+                Case Token.TokenType.NoteRefOpen
+                    ret.Children.Add(ParseNoteRef())
+                Case Else
+                    ret.Children.Add(ParseParagraph())
+            End Select
+        Loop
+
+        Return ret
+    End Function
+
+    Public Sub Parse()
+        RootNode = ParseEntryLevel()
     End Sub
 
 End Class
