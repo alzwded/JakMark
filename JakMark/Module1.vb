@@ -33,9 +33,11 @@ Module Module1
         REM     Environment.Exit(255)
         REM End If
 
+        Dim title = "Document"
         Dim swIn As System.IO.StreamReader
         If args.Length > 0 Then
             swIn = New StreamReader(args(0))
+            title = args(1)
         Else
             swIn = New StreamReader(Console.OpenStandardInput())
         End If
@@ -45,23 +47,26 @@ Module Module1
             sw = New StreamWriter(args(1))
         Else
             sw = New StreamWriter(Console.OpenStandardOutput())
+
         End If
 
         Dim prs = New Parser(swIn)
+
+        ' For Each tok In prs.Tokens
+        '     sw.WriteLine(tok)
+        ' Next
+
+        prs.Parse()
         Dim rn = prs.RootNode
 
-        For Each tok In prs.Tokens
-            sw.WriteLine(tok)
-        Next
+        Dim htmlVisitor = New HtmlVisitor(sw, title)
+
+        htmlVisitor.Prologue()
+        htmlVisitor.Process(rn)
+        htmlVisitor.Epilogue()
 
         swIn.Close()
         sw.Close()
-
-        'Dim htmlVisitor = New HtmlVisitor(sw, args(1))
-        '
-        'htmlVisitor.Prologue()
-        'htmlVisitor.Process(parser.RootNode)
-        'htmlVisitor.Epilogue()
     End Sub
 
 End Module

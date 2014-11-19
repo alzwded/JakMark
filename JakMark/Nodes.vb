@@ -11,6 +11,7 @@
     Sub Visit(node As PlainText)
     Sub Visit(node As FormattedText)
     Sub Visit(node As Link)
+    Sub Visit(node As LiteralLF)
     ' Footnote is an inline/entry-point hybrid
     ' e.g. its entry point is at the end of the document for HTML
     '      while it's inlined where declared as an anchor
@@ -29,6 +30,14 @@ Public Class PlainText
     Sub New(Text As String)
         Me.Text = Text
     End Sub
+
+    Public Sub Accept(visitor As IVisitor) Implements ITreeNode.Accept
+        visitor.Visit(Me)
+    End Sub
+End Class
+
+Public Class LiteralLF
+    Implements ITreeNode
 
     Public Sub Accept(visitor As IVisitor) Implements ITreeNode.Accept
         visitor.Visit(Me)

@@ -8,10 +8,13 @@ Public Class HtmlVisitor
     Private _stream As TextWriter
     Private _title As String
     Private _footNotes As Dictionary(Of Integer, String)
+    Private _usedHeadingIds As Dictionary(Of String, Integer)
 
     Public Sub New(sw As TextWriter, Optional title As String = "")
         Me._stream = sw
         _title = title
+        _footNotes = New Dictionary(Of Integer, String)
+        _usedHeadingIds = New Dictionary(Of String, Integer)
     End Sub
 
     Public Sub Prologue() Implements IOutputProvider.Prologue
@@ -80,12 +83,19 @@ Public Class HtmlVisitor
         Dim r = New Regex("[a-zA-Z0-9]")
         Dim chars = From c In str.ToCharArray()
                     Where r.Match(c.ToString()).Success
-                    Select c
+                    Select s = c.ToString()
 
-        Dim f As System.Func(Of String, Char, String) = Function(c As Char, s As String) As String
-                                                            Return c & s
-                                                        End Function
-        Return chars.Aggregate("", f)
+        Dim f As System.Func(Of String, String, String) = Function(c As String, s As String) As String
+                                                              Return c & s
+                                                          End Function
+        Dim proposedTitle As String = chars.Aggregate("", f)
+        If _usedHeadingIds.ContainsKey(proposedTitle) Then
+            proposedTitle = proposedTitle & _usedHeadingIds(proposedTitle).ToString()
+            _usedHeadingIds(proposedTitle) = _usedHeadingIds(proposedTitle) + 1
+        Else
+            _usedHeadingIds.Add(proposedTitle, 1)
+        End If
+        Return proposedTitle
     End Function
 
     Public Sub Visit(node As Heading) Implements IVisitor.Visit
@@ -117,7 +127,7 @@ Public Class HtmlVisitor
     End Sub
 
     Public Sub Visit(node As PlainText) Implements IVisitor.Visit
-        _stream.Write(node.Text)
+        _stream.Write(node.Text & " ")
     End Sub
 
     Public Sub Visit(node As Table) Implements IVisitor.Visit
@@ -147,5 +157,9 @@ Public Class HtmlVisitor
         _stream.WriteLine("<p>")
         node.Stuff.Accept(Me)
         _stream.WriteLine("</p>")
+    End Sub
+
+    Public Sub Visit(node As LiteralLF) Implements IVisitor.Visit
+        _stream.WriteLine("<br/>")
     End Sub
 End Class

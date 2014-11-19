@@ -85,6 +85,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Parser.Parser.vb" />
+    <Compile Include="Parser.Tokenizer.vb" />
     <Compile Include="Parser.vb" />
   </ItemGroup>
   <ItemGroup>
