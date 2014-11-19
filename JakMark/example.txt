@@ -4,6 +4,8 @@ This is an example jm text. !woot!
 
 ## Subheading 1
 
+## Subheading 12
+
 This **bolded text** makes an *itallic* point. `Monospaced`. [^note1]
 
 :[^note1]: some *body* text
@@ -11,6 +13,8 @@ This **bolded text** makes an *itallic* point. `Monospaced`. [^note1]
 You can [link](http://stuff.example.com) to things. Or like [this].
 
 :[this]: http://link.example.com
+
+## Example
 
 You can preserve line breaks with  
 two spaces at the end of the paragraph. This -- is an emdash. These \!--\! are two dashes.

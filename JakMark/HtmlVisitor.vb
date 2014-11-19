@@ -5,19 +5,22 @@ Public Class HtmlVisitor
     Implements IVisitor
     Implements IOutputProvider
 
+    Private _fullHtml As Boolean
     Private _stream As TextWriter
     Private _title As String
     Private _footNotes As Dictionary(Of Integer, String)
     Private _usedHeadingIds As Dictionary(Of String, Integer)
 
-    Public Sub New(sw As TextWriter, Optional title As String = "")
+    Public Sub New(sw As TextWriter, Optional fullHtml As Boolean = False, Optional title As String = "")
         Me._stream = sw
         _title = title
         _footNotes = New Dictionary(Of Integer, String)
         _usedHeadingIds = New Dictionary(Of String, Integer)
+        _fullHtml = fullHtml
     End Sub
 
     Public Sub Prologue() Implements IOutputProvider.Prologue
+        If Not _fullHtml Then Return
         ' write out html, head, default css etc
         _stream.WriteLine("<!DOCTYPE html>")
         _stream.WriteLine("<html><head>")
@@ -41,6 +44,7 @@ Public Class HtmlVisitor
             _stream.WriteLine("<p id=""fn:{0}"">{0}. {1} <a href=""#fnref:{0}"">Back</a></p>", li.Key, li.Value)
         Next
 
+        If Not _fullHtml Then Return
         _stream.WriteLine("</body></html>")
     End Sub
 
@@ -55,7 +59,7 @@ Public Class HtmlVisitor
     End Sub
 
     Public Sub Visit(node As Fenced) Implements IVisitor.Visit
-        _stream.WriteLine("<p><code></p>{0}</code>", node.Text)
+        _stream.WriteLine("<code>{0}</code>", node.Text)
     End Sub
 
     Public Sub Visit(node As Footnote) Implements IVisitor.Visit
@@ -90,10 +94,10 @@ Public Class HtmlVisitor
                                                           End Function
         Dim proposedTitle As String = chars.Aggregate("", f)
         If _usedHeadingIds.ContainsKey(proposedTitle) Then
-            proposedTitle = proposedTitle & _usedHeadingIds(proposedTitle).ToString()
             _usedHeadingIds(proposedTitle) = _usedHeadingIds(proposedTitle) + 1
+            proposedTitle = proposedTitle & "_" & _usedHeadingIds(proposedTitle).ToString()
         Else
-            _usedHeadingIds.Add(proposedTitle, 1)
+            _usedHeadingIds.Add(proposedTitle, 0)
         End If
         Return proposedTitle
     End Function
@@ -127,7 +131,7 @@ Public Class HtmlVisitor
     End Sub
 
     Public Sub Visit(node As PlainText) Implements IVisitor.Visit
-        _stream.Write(node.Text)
+        _stream.Write(System.Web.HttpUtility.HtmlEncode(node.Text))
     End Sub
 
     Public Sub Visit(node As Table) Implements IVisitor.Visit

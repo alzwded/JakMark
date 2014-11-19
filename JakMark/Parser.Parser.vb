@@ -354,6 +354,7 @@
         Do Until _tokens.First().Type = Token.TokenType.LineFeed
             collection.Children.Add(ParseNext())
         Loop
+        _tokens.Remove(_tokens.First())
 
         Return New Paragraph With {.Stuff = collection}
     End Function
@@ -366,12 +367,22 @@
                 Case Token.TokenType.Whitespace
                     ret.Children.Add(New Whitespace())
                     _tokens.Remove(_tokens.First())
+                Case Token.TokenType.LineFeed
+                    _tokens.Remove(_tokens.First())
                 Case Token.TokenType.Hash
                     ret.Children.Add(ParseHeading())
                 Case Token.TokenType.RefOpen
                     ParseRef()
                 Case Token.TokenType.NoteRefOpen
                     ParseNoteRef()
+                Case Token.TokenType.CommentOpen
+                    ConsumeComment()
+                Case Token.TokenType.ListOpen
+                    REM apparently a list can't be embedded inside a P tag
+                    ret.Children.Add(ParseList())
+                Case Token.TokenType.TableOpen
+                    REM apparently a table can't be embedded inside a P tag
+                    ret.Children.Add(ParseTable())
                 Case Else
                     ret.Children.Add(ParseParagraph())
             End Select

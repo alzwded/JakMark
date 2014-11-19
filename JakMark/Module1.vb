@@ -24,7 +24,14 @@ Module Module1
     ' * Escaped
 
     Sub Usage()
-
+        Dim appName = System.Environment.GetCommandLineArgs()(0)
+        Console.WriteLine("{0} Copyright (c) 2014 Vlad Meșco", appName)
+        Console.WriteLine("Usage:")
+        Console.WriteLine("{0} /?          print this message", appName)
+        Console.WriteLine("{0} [if] [of]   reads the JM file <if> and writes html to <of>", appName)
+        Dim blanks = New String(" "c, appName.Length)
+        Console.WriteLine("{0}             infile or outfile can be ""-"" for stdin/stdout respectively", blanks)
+        Console.WriteLine("{0}             if <of> is a file name, the result is a full html document", blanks)
     End Sub
 
     Sub Main(ByVal args() As String)
@@ -35,19 +42,33 @@ Module Module1
 
         Dim title = "Document"
         Dim swIn As System.IO.StreamReader
+        Dim fullHtml = False
+
         If args.Length > 0 Then
-            swIn = New StreamReader(args(0))
-            title = args(1)
+            If args(0) = "/?" Then
+                Usage()
+                Environment.Exit(255)
+                swIn = Nothing
+            ElseIf args(0) = "-" Then
+                swIn = New StreamReader(Console.OpenStandardInput())
+            Else
+                swIn = New StreamReader(args(0))
+                title = args(0)
+            End If
         Else
             swIn = New StreamReader(Console.OpenStandardInput())
         End If
 
-        Dim sw As StreamWriter
+        Dim sw As StreamWriter = Nothing
         If args.Length > 1 Then
-            sw = New StreamWriter(args(1))
+            If args(1) = "-" Then
+                sw = New StreamWriter(Console.OpenStandardOutput())
+            Else
+                sw = New StreamWriter(args(1))
+                fullHtml = True
+            End If
         Else
             sw = New StreamWriter(Console.OpenStandardOutput())
-
         End If
 
         Dim prs = New Parser(swIn)
@@ -59,7 +80,7 @@ Module Module1
         prs.Parse()
         Dim rn = prs.RootNode
 
-        Dim htmlVisitor = New HtmlVisitor(sw, title)
+        Dim htmlVisitor = New HtmlVisitor(sw, fullHtml, title)
 
         htmlVisitor.Prologue()
         htmlVisitor.Process(rn)
