@@ -77,8 +77,7 @@ Public Class Parser
             {"</table>", Token.TokenType.TableClose},
             {"<list>", Token.TokenType.ListOpen},
             {"-", Token.TokenType.Dash},
-            {"</list>", Token.TokenType.ListClose},
-            {"  ", Token.TokenType.DoubleSpace}
+            {"</list>", Token.TokenType.ListClose}
             }
         Dim matchingTokens() = {Token.TokenType.Fence, Token.TokenType.Backtick, _
                                 Token.TokenType.Escape, Token.TokenType.Star,
@@ -103,6 +102,16 @@ Public Class Parser
             If line.Length = 0 Then
                 _tokens.Add(New Token With {.Type = Token.TokenType.LineFeed})
 
+                If _stream.Peek() > -1 Then
+                    line = _stream.ReadLine()
+                    Continue Do
+                Else
+                    Exit Do
+                End If
+            End If
+
+            If line = "  " Then
+                _tokens.Add(New Token With {.Type = Token.TokenType.DoubleSpace})
                 If _stream.Peek() > -1 Then
                     line = _stream.ReadLine()
                     Continue Do
