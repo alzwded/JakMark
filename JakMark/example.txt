@@ -6,11 +6,11 @@ This is an example jm text. !woot!
 
 This **bolded text** makes an *itallic* point. `Monospaced`. [^note1]
 
-[^note1]: some *body* text
+:[^note1]: some *body* text
 
 You can [link](http://stuff.example.com) to things. Or like [this].
 
-[this]: http://link.example.com
+:[this]: http://link.example.com
 
 You can preserve line breaks with  
 two spaces at the end of the paragraph. This -- is an emdash. These \!--\! are two dashes.
@@ -31,14 +31,14 @@ cell2.1		| cell2.2
 
 Lists:
 <list>
-* bullet1  
+- bullet1
   <list>
-  * sub bullet1
-  * sub bullet2
+  - sub bullet1
+  - sub bullet2
   </list>
-* bullet2  
+- bullet2  
   multiple lines using two spaces at the end of the previous line.
-* bullet3  
+- bullet3
   <list>
   # numbered1
   # numbered2

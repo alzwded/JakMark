@@ -10,18 +10,22 @@ Structure Token
         Backtick
         Escape
         Star
+        DoubleStar
         Pipe
         SquareOpen
         SquareClose
         Note
-        NoteRef
-        HrefClose
+        NoteRefOpen
+        RefOpen
+        RefClose
+        LParenOpen
         LParenClose
         TableOpen
         TableClose
         ListOpen
         ListClose
         DoubleSpace
+        Dash
         Text
     End Enum
 
@@ -57,23 +61,36 @@ Public Class Parser
             {"#", Token.TokenType.Hash},
             {"```", Token.TokenType.Fence},
             {"`", Token.TokenType.Backtick},
-            {"|", Token.TokenType.Pipe},
             {"\!", Token.TokenType.Escape},
+            {"**", Token.TokenType.DoubleStar},
             {"*", Token.TokenType.Star},
+            {"[^", Token.TokenType.Note},
+            {":[^", Token.TokenType.NoteRefOpen},
+            {":[", Token.TokenType.RefOpen},
+            {"]:", Token.TokenType.RefClose},
             {"[", Token.TokenType.SquareOpen},
             {"]", Token.TokenType.SquareClose},
-            {"[^", Token.TokenType.Note},
-            {"]:", Token.TokenType.NoteRef},
-            {"](", Token.TokenType.HrefClose},
+            {"(", Token.TokenType.LParenOpen},
             {")", Token.TokenType.LParenClose},
             {"<table>", Token.TokenType.TableOpen},
+            {"|", Token.TokenType.Pipe},
             {"</table>", Token.TokenType.TableClose},
             {"<list>", Token.TokenType.ListOpen},
+            {"-", Token.TokenType.Dash},
             {"</list>", Token.TokenType.ListClose},
             {"  ", Token.TokenType.DoubleSpace}
             }
-        ' Dim interjectingTokens() = {"#", "`", "\!", "*", "|", "[", "]", "[^", "]:", 
-        ' "](", ")", "<table>", "</table>", "<list>", "</list>", "```", "  "}
+        Dim matchingTokens() = {Token.TokenType.Fence, Token.TokenType.Backtick, _
+                                Token.TokenType.Escape, Token.TokenType.Star,
+                                Token.TokenType.DoubleStar}
+        Dim asymetricTokens = _
+            New Dictionary(Of Token.TokenType, String) From {
+                {Token.TokenType.SquareOpen, "]"},
+                {Token.TokenType.Note, "]"},
+                {Token.TokenType.NoteRefOpen, "]:"},
+                {Token.TokenType.RefOpen, "]:"},
+                {Token.TokenType.LParenOpen, ")"}
+                }
 
         _tokens = New List(Of Token)
 
@@ -99,11 +116,20 @@ Public Class Parser
                     _tokens.Add(New Token With {.Type = kv.Value})
                     line = line.Substring(kv.Key.Length)
 
-                    If kv.Value = Token.TokenType.Fence _
-                        OrElse kv.Value = Token.TokenType.Escape Then
+                    Dim matchingToken As String = ""
+                    Dim matchingTokenToken As Token.TokenType = Token.TokenType.Dash
+
+                    If asymetricTokens.ContainsKey(kv.Value) Then
+                        matchingToken = asymetricTokens(kv.Value)
+                        matchingTokenToken = interjectingDict(matchingToken)
+                    ElseIf matchingTokens.Contains(kv.Value) Then
+                        matchingToken = kv.Key
+                        matchingTokenToken = kv.Value
+                    End If
+                    If matchingToken.Length > 0 Then
                         Dim text = ""
                         ' consume input until ``` is found
-                        Do While Not line.IndexOf(kv.Key) >= 0
+                        Do While Not line.IndexOf(matchingToken) >= 0
                             text = text & line & vbLf
                             If _stream.Peek() < 0 Then
                                 line = ""
@@ -112,18 +138,18 @@ Public Class Parser
                             line = _stream.ReadLine
                         Loop
 
-                        Dim pos = line.IndexOf(kv.Key)
+                        Dim pos = line.IndexOf(matchingToken)
                         If pos >= 0 Then
                             text = text & line.Substring(0, pos)
-                            line = line.Substring(pos + kv.Key.Length)
+                            line = line.Substring(pos + matchingToken.Length)
                         ElseIf line.Length > kv.Key.Length Then
-                            line = line.Substring(pos + kv.Key.Length)
+                            line = line.Substring(pos + matchingToken.Length)
                         Else
                             line = ""
                         End If
 
                         _tokens.Add(New Token With {.Type = Token.TokenType.Text, .Text = text})
-                        _tokens.Add(New Token With {.Type = kv.Value})
+                        _tokens.Add(New Token With {.Type = matchingTokenToken})
                     End If
 
                     Continue Do
@@ -146,6 +172,8 @@ Public Class Parser
             If wsFound Then Continue Do
 
             For i = 0 To line.Length - 1
+                ' Find first token...
+                REM TODO fix this
                 If line(i) = " "c OrElse line(i) = vbTab Then
                     Dim text = line.Substring(0, i)
                     line = line.Substring(i)
@@ -160,9 +188,6 @@ Public Class Parser
 
     Private Sub Parse()
         Tokenize()
-        For Each tok In _tokens
-            Console.WriteLine(tok.ToString())
-        Next
     End Sub
 
 End Class
