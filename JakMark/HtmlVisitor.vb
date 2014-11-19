@@ -87,7 +87,7 @@ Public Class HtmlVisitor
     End Sub
 
     Private Function ExtractHeadingId(str As String) As String
-        Dim r = New Regex("[a-zA-Z0-9]")
+        Static r = New Regex("[a-zA-Z0-9]")
         Dim chars = From c In str.ToCharArray()
                     Where r.Match(c.ToString()).Success
                     Select s = c.ToString()
