@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2238F5F9-21A0-4086-BF68-862C81B74253}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <StartupObject>JakMark.Module1</StartupObject>
+    <StartupObject>JakMark.MainModule</StartupObject>
     <RootNamespace>JakMark</RootNamespace>
     <AssemblyName>JakMark</AssemblyName>
     <FileAlignment>512</FileAlignment>
@@ -70,7 +70,7 @@
     <Compile Include="HtmlVisitor.vb" />
     <Compile Include="IOutputProvider.vb" />
     <Compile Include="Nodes.vb" />
-    <Compile Include="Module1.vb" />
+    <Compile Include="MainModule.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>

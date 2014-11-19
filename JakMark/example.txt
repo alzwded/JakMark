@@ -19,7 +19,7 @@ You can [link](http://stuff.example.com) to things. Or like [this].
 You can preserve line breaks with  
 two spaces at the end of the paragraph. This -- is an emdash. These \!--\! are two dashes.
 
-You can talk about \!<list>* s\! without having them rendered by escaping them with \\!!\! \!\\!!.
+You can talk about \!<list>* s\! without having them rendered by escaping them with `\!...\!`.
 
 ```
 This is fenced.		And you can do whatever you like.

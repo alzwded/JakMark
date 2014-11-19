@@ -1,6 +1,6 @@
 ﻿Imports System.IO
 
-Module Module1
+Module MainModule
     ' Features I'd like to support
     ' * bold, italic, monospaced                **bold** *italic* `monospaced`
     ' * bulletted, numbered lists with multiple levels  <list>* line1 \n * line 2</list> <list># line1 \n line 2</list>
@@ -23,6 +23,10 @@ Module Module1
     ' * Normal
     ' * Escaped
 
+    Enum OutputType
+        Html
+    End Enum
+
     Sub Usage()
         Dim appName = System.Environment.GetCommandLineArgs()(0)
         Console.WriteLine("{0} Copyright (c) 2014 Vlad Meșco", appName)
@@ -35,17 +39,11 @@ Module Module1
     End Sub
 
     Sub Main(ByVal args() As String)
-        REM If args.Count <> 2 Then
-        REM     Usage()
-        REM     Environment.Exit(255)
-        REM End If
-
-        Dim title = "Document"
         Dim swIn As System.IO.StreamReader
-        Dim fullHtml = False
+        Dim otherData = New Dictionary(Of String, Object)
 
         If args.Length > 0 Then
-            If args(0) = "/?" Then
+            If args(0) = "/?" OrElse args(0) = "-h" Then
                 Usage()
                 Environment.Exit(255)
                 swIn = Nothing
@@ -53,19 +51,31 @@ Module Module1
                 swIn = New StreamReader(Console.OpenStandardInput())
             Else
                 swIn = New StreamReader(args(0))
-                title = args(0)
+                otherData.Add("title", args(0))
             End If
         Else
             swIn = New StreamReader(Console.OpenStandardInput())
         End If
 
+        Dim ot = OutputType.Html
         Dim sw As StreamWriter = Nothing
         If args.Length > 1 Then
             If args(1) = "-" Then
                 sw = New StreamWriter(Console.OpenStandardOutput())
+                ot = OutputType.Html
+            ElseIf args(1) = ".html" Then
+                sw = New StreamWriter(Console.OpenStandardOutput())
+                ot = OutputType.Html
+                otherData.Add("full", True)
+                REM TODO .md type output
+            ElseIf args(1).EndsWith(".html") OrElse args(1).EndsWith(".htm") Then
+                sw = New StreamWriter(args(1))
+                ot = OutputType.Html
+                otherData.Add("full", True)
+                REM TODO .md type output
             Else
                 sw = New StreamWriter(args(1))
-                fullHtml = True
+                ot = OutputType.Html
             End If
         Else
             sw = New StreamWriter(Console.OpenStandardOutput())
@@ -80,14 +90,30 @@ Module Module1
         prs.Parse()
         Dim rn = prs.RootNode
 
-        Dim htmlVisitor = New HtmlVisitor(sw, fullHtml, title)
+        Dim visitor As IOutputProvider = OutputProviderFactory(ot, sw, otherData)
 
-        htmlVisitor.Prologue()
-        htmlVisitor.Process(rn)
-        htmlVisitor.Epilogue()
+        visitor.Prologue()
+        visitor.Process(rn)
+        visitor.Epilogue()
 
         swIn.Close()
         sw.Close()
     End Sub
+
+    Private Function OutputProviderFactory(ot As OutputType, _
+                                           sw As TextWriter, _
+                                           otherData As Dictionary(Of String, Object)) _
+                                       As IOutputProvider
+        Select Case ot
+            Case OutputType.Html
+                Dim fullHtml = False
+                Dim title = "Document"
+                If otherData.ContainsKey("full") Then fullHtml = otherData("full")
+                If otherData.ContainsKey("title") Then title = otherData("title")
+                Return New HtmlVisitor(sw, fullHtml, title)
+            Case Else
+                Throw New Exception("Only doing this lest vb gives a warning")
+        End Select
+    End Function
 
 End Module
