@@ -1,0 +1,46 @@
+﻿# Example
+
+This is an example jm text. !woot!
+
+## Subheading 1
+
+This **bolded text** makes an *itallic* point. `Monospaced`. [^note1]
+
+[^note1]: some *body* text
+
+You can [link](http://stuff.example.com) to things. Or like [this].
+
+[this]: http://link.example.com
+
+You can preserve line breaks with  
+two spaces at the end of the paragraph. This -- is an emdash. These \!--\! are two dashes.
+
+You can talk about \!<list>* s\! without having them rendered by escaping them with \\!!\! \!\\!!.
+
+```
+This is fenced.		And you can do whatever you like.
+```
+
+<table>
+head1		| head2
+cell1.1		| cell1.2
+cell2.1		| cell2.2
+</table>
+
+<!-- you won't see this in the rendered html -->
+
+Lists:
+<list>
+* bullet1  
+  <list>
+  * sub bullet1
+  * sub bullet2
+  </list>
+* bullet2  
+  multiple lines using two spaces at the end of the previous line.
+* bullet3  
+  <list>
+  # numbered1
+  # numbered2
+  </list>
+</list>
