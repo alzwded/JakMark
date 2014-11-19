@@ -29,7 +29,7 @@ Module MainModule
 
     Sub Usage()
         Dim appName = System.Environment.GetCommandLineArgs()(0)
-        Console.WriteLine("{0} Copyright (c) 2014 Vlad Meșco", appName)
+        Console.WriteLine("{0} v{1} Copyright (c) 2014 Vlad Meșco", appName, My.Application.Info.Version.ToString())
         Console.WriteLine("Usage:")
         Console.WriteLine("{0} /?          print this message", appName)
         Console.WriteLine("{0} [if] [of]   reads the JM file <if> and writes html to <of>", appName)
@@ -39,6 +39,7 @@ Module MainModule
     End Sub
 
     Sub Main(ByVal args() As String)
+        Console.OutputEncoding = System.Text.Encoding.UTF8
         Dim swIn As System.IO.StreamReader
         Dim otherData = New Dictionary(Of String, Object)
 
