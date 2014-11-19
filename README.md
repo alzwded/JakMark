@@ -24,6 +24,7 @@ TODO
 * Improvements
   - [ ] Improve Tokenzier to support some intermangling of markups
   - [ ] Improve Parser because right now I add some blank nodes in the AST
+  - [ ] Improve both Tokenizer and Parser to give out diagnostics (e.g. `syntax error @row near token x` or something like that)
 * Documentation
   - [ ] Write it. Right now it doesn't exist
 
