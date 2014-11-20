@@ -151,7 +151,8 @@
                 .Link = linkk.Text}
         Else
             Dim l = New Link() With {
-                .Text = text.Text
+                .Text = text.Text,
+                .Link = ""
                 }
             If Not _links.ContainsKey(text.Text) Then
                 _links.Add(text.Text, l)
@@ -167,7 +168,9 @@
         If _tokens.First().Type <> Token.TokenType.SquareClose Then Throw New SyntaxErrorException()
         _tokens.Remove(_tokens.First())
         
-        Dim l = New Footnote()
+        Dim l = New Footnote() With {
+            .Note = New Container()
+            }
         _notes.Add(text.Text, l)
         Return l
     End Function
@@ -351,8 +354,13 @@
             Return collection
         End If
 
-        Do Until _tokens.First().Type = Token.TokenType.LineFeed
-            collection.Children.Add(ParseNext())
+        Do Until _tokens.Count = 0 _
+            OrElse _tokens.First().Type = Token.TokenType.LineFeed
+            Do Until _tokens.First().Type = Token.TokenType.LineFeed
+                collection.Children.Add(ParseNext())
+            Loop
+            _tokens.Remove(_tokens.First())
+            collection.Children.Add(New Whitespace())
         Loop
         _tokens.Remove(_tokens.First())
 
