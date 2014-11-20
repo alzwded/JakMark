@@ -140,7 +140,9 @@ Public Class GHMarkDown
     End Sub
 
     Public Sub Visit(node As PlainText) Implements IVisitor.Visit
-        _stream.Write(node.Text)
+        Static r As Regex = New Regex("(?<char>[*_#=<>\-+\[\]:!`|])")
+        Dim text = r.Replace(node.Text, "\${char}")
+        _stream.Write(text)
         _blankLine = False
     End Sub
 

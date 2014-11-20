@@ -23,6 +23,8 @@ two spaces at the end of the paragraph. This -- is an emdash. These \!--\! are t
 
 You can talk about \!*<list> s*\! without having them rendered by escaping them with `\!...\!`.
 
+\!*_-+><___][]|\!
+
 ```
 This is fenced.		And you can do whatever you like.
 
