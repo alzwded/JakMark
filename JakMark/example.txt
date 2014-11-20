@@ -61,7 +61,8 @@ Lists:
   - sub bullet2
   </list>
 - bullet2  
-  multiple lines using two spaces at the end of the previous line.
+  multiple lines using  
+  two spaces at the end of the previous line.
 - bullet3
   <list>
   # numbered1

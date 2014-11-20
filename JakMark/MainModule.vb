@@ -26,6 +26,7 @@ Module MainModule
     Enum OutputType
         Html
         GHMarkDown
+        WikiPlex
     End Enum
 
     Sub Usage()
@@ -73,13 +74,18 @@ Module MainModule
                 sw = New StreamWriter(args(1))
                 ot = OutputType.Html
                 otherData.Add("full", True)
-                REM TODO .md type output
             ElseIf args(1) = ".md" Then
                 sw = New StreamWriter(Console.OpenStandardOutput())
                 ot = OutputType.GHMarkDown
             ElseIf args(1).EndsWith(".md") Then
                 sw = New StreamWriter(args(1))
                 ot = OutputType.GHMarkDown
+            ElseIf args(1) = ".wplex" Then
+                sw = New StreamWriter(Console.OpenStandardOutput())
+                ot = OutputType.WikiPlex
+            ElseIf args(1).EndsWith(".wplex") Then
+                sw = New StreamWriter(args(1))
+                ot = OutputType.WikiPlex
             Else
                 sw = New StreamWriter(args(1))
                 ot = OutputType.Html
@@ -120,6 +126,8 @@ Module MainModule
                 Return New HtmlVisitor(sw, fullHtml, title)
             Case OutputType.GHMarkDown
                 Return New GHMarkDown(sw)
+            Case OutputType.WikiPlex
+                Return New WikiPlex(sw)
             Case Else
                 Throw New Exception("Only doing this lest vb gives a warning")
         End Select
