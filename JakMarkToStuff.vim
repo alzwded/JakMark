@@ -1,6 +1,8 @@
 " TODO update s:JakMarkPath accordingly
 let s:JakMarkPath = 'D:\Projects\JakMark\JakMark\bin\Release\JakMark.exe'
 
+autocmd BufNewFile,BufRead *.jm setlocal syntax=jm
+
 function! JakMarkToHtml()
     let l:currentFile = expand("%:t")
     "let l:args = ' "'.l:currentFile.'" .html'
