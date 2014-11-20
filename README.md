@@ -29,7 +29,7 @@ TODO
 * Documentation
   - [ ] Write it. Right now it doesn't exist
 * Portability
-  - [ ] Make it run on the lates table version of [Mono](http://www.mono-project.com/download/#download-lin)
+  - [ ] Make it run on the latest stable version of [Mono](http://www.mono-project.com/download/#download-lin)
 
 If you want to use JakMark and you have some feature request (there are no bugs), drop a line.
 
