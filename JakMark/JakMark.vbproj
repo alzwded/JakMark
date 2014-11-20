@@ -82,6 +82,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GHMarkDown.vb" />
     <Compile Include="HtmlVisitor.vb" />
     <Compile Include="IOutputProvider.vb" />
     <Compile Include="Nodes.vb" />

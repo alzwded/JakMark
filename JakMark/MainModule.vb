@@ -25,6 +25,7 @@ Module MainModule
 
     Enum OutputType
         Html
+        GHMarkDown
     End Enum
 
     Sub Usage()
@@ -68,12 +69,17 @@ Module MainModule
                 sw = New StreamWriter(Console.OpenStandardOutput())
                 ot = OutputType.Html
                 otherData.Add("full", True)
-                REM TODO .md type output
             ElseIf args(1).EndsWith(".html") OrElse args(1).EndsWith(".htm") Then
                 sw = New StreamWriter(args(1))
                 ot = OutputType.Html
                 otherData.Add("full", True)
                 REM TODO .md type output
+            ElseIf args(1) = ".md" Then
+                sw = New StreamWriter(Console.OpenStandardOutput())
+                ot = OutputType.GHMarkDown
+            ElseIf args(1).EndsWith(".md") Then
+                sw = New StreamWriter(args(1))
+                ot = OutputType.GHMarkDown
             Else
                 sw = New StreamWriter(args(1))
                 ot = OutputType.Html
@@ -112,6 +118,8 @@ Module MainModule
                 If otherData.ContainsKey("full") Then fullHtml = otherData("full")
                 If otherData.ContainsKey("title") Then title = otherData("title")
                 Return New HtmlVisitor(sw, fullHtml, title)
+            Case OutputType.GHMarkDown
+                Return New GHMarkDown(sw)
             Case Else
                 Throw New Exception("Only doing this lest vb gives a warning")
         End Select

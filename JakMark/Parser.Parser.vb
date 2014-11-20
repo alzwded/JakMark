@@ -356,11 +356,11 @@
 
         Do Until _tokens.Count = 0 _
             OrElse _tokens.First().Type = Token.TokenType.LineFeed
+            If collection.Children.Count > 0 Then collection.Children.Add(New Whitespace())
             Do Until _tokens.First().Type = Token.TokenType.LineFeed
                 collection.Children.Add(ParseNext())
             Loop
             _tokens.Remove(_tokens.First())
-            collection.Children.Add(New Whitespace())
         Loop
         _tokens.Remove(_tokens.First())
 

@@ -16,10 +16,12 @@ You can [link](http://stuff.example.com) to things. Or like [this].
 
 ## Example
 
+### Example
+
 You can preserve line breaks with  
 two spaces at the end of the paragraph. This -- is an emdash. These \!--\! are two dashes.
 
-You can talk about \!<list>* s\! without having them rendered by escaping them with `\!...\!`.
+You can talk about \!*<list> s*\! without having them rendered by escaping them with `\!...\!`.
 
 ```
 This is fenced.		And you can do whatever you like.
@@ -36,6 +38,7 @@ cell2.1		| cell2.2
 </table>
 
 And now, a complicated embedded table:
+
 <table>
 head1		| head2
 <table>
@@ -50,6 +53,7 @@ cell2.1		| cell2.2
 <!-- you won't see this in the rendered html -->
 
 Lists:
+
 <list>
 - bullet1
   <list>
@@ -61,6 +65,10 @@ Lists:
 - bullet3
   <list>
   # numbered1
+    <list>
+	- a
+	- b
+	</list>
   # numbered2
   </list>
 </list>
