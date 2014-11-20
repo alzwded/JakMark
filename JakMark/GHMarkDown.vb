@@ -49,11 +49,11 @@ Public Class GHMarkDown
 
     Public Sub Visit(node As Fenced) Implements IVisitor.Visit
         If Not _blankLine Then _stream.WriteLine()
-        _stream.WriteLine("```")
+        _stream.Write("```")
         Indent()
         Dim r = New Regex("^")
         Dim text = r.Replace(node.Text, New String(" "c, _currentIndent * 2))
-        _stream.WriteLine(text)
+        _stream.Write(text)
         Indent()
         _stream.WriteLine("```")
         _stream.WriteLine()
