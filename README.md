@@ -18,9 +18,9 @@ TODO
 ----
 
 * More output providers
-  - [ ] GitHub falvoured MarkDown
+  - [x] GitHub falvoured MarkDown
   - [ ] CommonMark
-  - [ ] CodePlex wiki markup
+  - [x] CodePlex wiki markup
 * Improvements
   - [ ] Improve Tokenzier to support some intermangling of markups
   - [ ] Improve Parser because right now I add some blank nodes in the AST
