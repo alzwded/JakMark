@@ -12,7 +12,7 @@ Writing more output providers should be fairly easy since it's just a matter of 
 But how does it look like?
 --------------------------
 
-You can find an example and its HTML rendered form over in the [1.0 release](https://github.com/alzwded/JakMark/releases/tag/1.0)
+You can find an example and its HTML rendered form over in the [1.1 release](https://github.com/alzwded/JakMark/releases/tag/1.1)
 
 TODO
 ----
