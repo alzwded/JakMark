@@ -57,20 +57,20 @@ cell2.1		| cell2.2
 Lists:
 
 <list>
-- bullet1
++ bullet1
   <list>
-  - sub bullet1
-  - sub bullet2
+  + sub bullet1
+  + sub bullet2
   </list>
-- bullet2  
++ bullet2  
   multiple lines using  
   two spaces at the end of the previous line.
-- bullet3
++ bullet3
   <list>
   # numbered1
     <list>
-	- a
-	- b
+	+ a
+	+ b
 	</list>
   # numbered2
   </list>
