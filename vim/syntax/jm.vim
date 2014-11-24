@@ -11,8 +11,8 @@ syn match JAKMARK_bold "\*\{2\}[^*]*\*\{2\}"
 
 syn match JAKMARK_list "<list>"
 syn match JAKMARK_list_e "</list>"
-syn match JAKMARK_table "<list>"
-syn match JAKMARK_table_e "</list>"
+syn match JAKMARK_table "<table>"
+syn match JAKMARK_table_e "</table>"
 syn region JAKMARK_listg start="<list>" end="</list>" contains=ALL,JAKMARK_listitems keepend
 syn match JAKMARK_listitems "[+#]" containedin=JAKMARK_listg contained
 syn region JAKMARK_tableg start="<table>" end="</table>" contains=ALL,JAKMARK_pipe keepend
