@@ -23,7 +23,7 @@
             {"|", Token.TokenType.Pipe},
             {"</table>", Token.TokenType.TableClose},
             {"<list>", Token.TokenType.ListOpen},
-            {"-", Token.TokenType.Dash},
+            {"+", Token.TokenType.Dash},
             {"</list>", Token.TokenType.ListClose},
             {"<!--", Token.TokenType.CommentOpen},
             {"-->", Token.TokenType.CommentClose}
