@@ -63,7 +63,7 @@ Public Class HtmlVisitor
 
         If _toc Then
             _stream.WriteLine("<span id=""__x_toc_2"">")
-            _stream.WriteLine("<h1>TOC</h1>")
+            _stream.WriteLine("<h1>Contents</h1>")
             _stream.WriteLine("<ol>")
             Dim prev = 1
             For Each i In _tocBuilder
