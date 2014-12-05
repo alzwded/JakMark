@@ -10,7 +10,7 @@ This **bolded text** makes an *itallic* point. `Monospaced`. [^note1]
 
 :[^note1]: some *body* text
 
-You can [link](http://stuff.example.com) to things. Or like [this].
+You can [link]{http://stuff.example.com} to things. Or like [this].
 
 :[this]: http://link.example.com
 

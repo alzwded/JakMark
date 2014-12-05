@@ -17,8 +17,8 @@
             {"]:", Token.TokenType.RefClose},
             {"[", Token.TokenType.SquareOpen},
             {"]", Token.TokenType.SquareClose},
-            {"(", Token.TokenType.LParenOpen},
-            {")", Token.TokenType.LParenClose},
+            {"{", Token.TokenType.LParenOpen},
+            {"}", Token.TokenType.LParenClose},
             {"<table>", Token.TokenType.TableOpen},
             {"|", Token.TokenType.Pipe},
             {"</table>", Token.TokenType.TableClose},
@@ -37,7 +37,7 @@
                 {Token.TokenType.Note, "]"},
                 {Token.TokenType.NoteRefOpen, "]:"},
                 {Token.TokenType.RefOpen, "]:"},
-                {Token.TokenType.LParenOpen, ")"},
+                {Token.TokenType.LParenOpen, "}"},
                 {Token.TokenType.CommentOpen, "-->"}
                 }
 

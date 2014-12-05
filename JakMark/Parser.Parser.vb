@@ -327,10 +327,10 @@
                     Return New PlainText("-")
                 Case Token.TokenType.LParenOpen
                     _tokens.Remove(tok)
-                    Return New PlainText("(")
+                    Return New PlainText("{")
                 Case Token.TokenType.LParenClose
                     _tokens.Remove(tok)
-                    Return New PlainText(")")
+                    Return New PlainText("}")
                 Case Token.TokenType.DoubleSpace
                     _tokens.Remove(tok)
                     Return New LiteralLF()
