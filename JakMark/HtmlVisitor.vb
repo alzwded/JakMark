@@ -39,17 +39,11 @@ Public Class HtmlVisitor
                           "a.small_permalink span { color: transparent; font-size: 50% }" & _
                           "a.small_permalink:hover span { color:black }")
         If _toc Then
-            _stream.WriteLine("<script type=""text/javascript"">")
-            _stream.WriteLine("function __x_initTOC() { " & vbLf & _
-                              "    document.getElementById('__x_toc_1').innerHTML = document.getElementById('__x_toc_2').innerHTML" & vbLf & _
-                              "    document.getElementById('__x_toc_2').style.visibility = 'hidden'" & vbLf & _
-                              "    document.getElementById('__x_toc_2').style.display = 'none'" & vbLf & _
-                              "}" & vbLf)
-            _stream.WriteLine("</script>")
         End If
         _stream.WriteLine("</head>")
         If _toc Then
-            _stream.WriteLine("<body onload=""__x_initTOC()"">")
+            REM _stream.WriteLine("<body onload=""__x_initTOC()"">")
+            _stream.WriteLine("<body>")
             _stream.WriteLine("<span id=""__x_toc_1""></span>")
         Else
             _stream.WriteLine("<body>")
@@ -94,6 +88,18 @@ Public Class HtmlVisitor
                 _stream.Write("</ol>")
             Loop
             _stream.WriteLine("</span>")
+            REM TODO refactore architecture to be able to place TOC
+            REM      at the begining of the document without resorting
+            REM      to javascript-based hacks.
+            REM      It's probably needed to do two passes, one for the TOC
+            REM      and one for actually writing the document
+            _stream.WriteLine("<script type=""text/javascript"">")
+            _stream.WriteLine("" & vbLf & _
+                              "    document.getElementById('__x_toc_1').innerHTML = document.getElementById('__x_toc_2').innerHTML" & vbLf & _
+                              "    document.getElementById('__x_toc_2').style.visibility = 'hidden'" & vbLf & _
+                              "    document.getElementById('__x_toc_2').style.display = 'none'" & vbLf & _
+                              "" & vbLf)
+            _stream.WriteLine("</script>")
         End If
 
         If Not _fullHtml Then Return
