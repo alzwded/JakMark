@@ -385,12 +385,12 @@
                     ParseNoteRef()
                 Case Token.TokenType.CommentOpen
                     ConsumeComment()
-                Case Token.TokenType.ListOpen
-                    REM apparently a list can't be embedded inside a P tag
-                    ret.Children.Add(ParseList())
-                Case Token.TokenType.TableOpen
-                    REM apparently a table can't be embedded inside a P tag
-                    ret.Children.Add(ParseTable())
+                    'Case Token.TokenType.ListOpen
+                    '    REM apparently a list can't be embedded inside a P tag
+                    '    ret.Children.Add(ParseList())
+                    'Case Token.TokenType.TableOpen
+                    '    REM apparently a table can't be embedded inside a P tag
+                    '    ret.Children.Add(ParseTable())
                 Case Else
                     ret.Children.Add(ParseParagraph())
             End Select
