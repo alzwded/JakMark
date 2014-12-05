@@ -34,10 +34,14 @@ Public Class HtmlVisitor
             _stream.WriteLine("<title>{0}</title>", _title)
         End If
         _stream.WriteLine("<style>{0}</style>",
-                          "code { font-family: monospace; white-space: pre-wrap; } .footnote { vertical-align: super; font-size: 50%; }" & _
+                          "div.para { margin: 1em 0px; }" & _
+                          "code { font-family: monospace; white-space: pre-wrap; page-break-inside: avoid; page-break-before: auto; page-break-after: auto; position: relative}" & _
+                          ".footnote { vertical-align: super; font-size: 50%; }" & _
                           "a.small_permalink { text-decoration: none; color:black; }" & _
                           "a.small_permalink span { color: transparent; font-size: 50% }" & _
-                          "a.small_permalink:hover span { color:black }")
+                          "a.small_permalink:hover span { color:black }" & _
+                          "pre { page-break-inside: avoid }" & _
+                          ".headingNoPageBreak { page-break-after: avoid; page-break-inside: avoid; position: relative; display: block } ")
         If _toc Then
         End If
         _stream.WriteLine("</head>")
@@ -58,7 +62,7 @@ Public Class HtmlVisitor
             _stream.WriteLine("<hr>")
         End If
         For Each li In list
-            _stream.WriteLine("<p id=""fn:{0}"">{0}. {1} <a href=""#fnref:{0}"">Back</a></p>", li.Key, li.Value)
+            _stream.WriteLine("<div class=""para"" id=""fn:{0}"">{0}. {1} <a href=""#fnref:{0}"">Back</a></p>", li.Key, li.Value)
         Next
 
         If _toc Then
@@ -81,7 +85,7 @@ Public Class HtmlVisitor
                     Loop
                 End If
                 prev = i.Item1
-                _stream.WriteLine("<li><a href=""#{1}"">{0}</a></li>", i.Item2, i.Item3)
+                _stream.WriteLine("<li><a style=""color:black;text-decoration:none""href=""#{1}"">{0}</a></li>", i.Item2, i.Item3)
             Next
             Do While prev > 0
                 prev = prev - 1
@@ -117,7 +121,7 @@ Public Class HtmlVisitor
     End Sub
 
     Public Sub Visit(node As Fenced) Implements IVisitor.Visit
-        _stream.WriteLine("<code>{0}</code>", node.Text)
+        _stream.WriteLine("<div style=""page-break-inside:avoid""><code>{0}</code></div>", node.Text)
     End Sub
 
     Public Sub Visit(node As Footnote) Implements IVisitor.Visit
@@ -162,8 +166,8 @@ Public Class HtmlVisitor
 
     Public Sub Visit(node As Heading) Implements IVisitor.Visit
         Dim hid = GenerateHeadingId(node.Text)
-        _stream.WriteLine("<a class=""small_permalink"" href=""#{2}""><h{0} class=""jmheading"" id=""{2}"">{1}" & _
-                          "<span>&nbsp;&nbsp;&#8734;</span></h{0}></a>", node.Level, node.Text, hid)
+        _stream.WriteLine("<div class=""headingNoPageBreak""><a class=""small_permalink"" href=""#{2}""><h{0} class=""jmheading"" id=""{2}"">{1}" & _
+                          "<span>&nbsp;&nbsp;&#8734;</span></h{0}></a></div>", node.Level, node.Text, hid)
         If _toc Then
             _tocBuilder.Add(New Tuple(Of Integer, String, String)(node.Level, node.Text, hid))
         End If
@@ -221,9 +225,9 @@ Public Class HtmlVisitor
     End Sub
 
     Public Sub Visit(node As Paragraph) Implements IVisitor.Visit
-        _stream.Write("<p>")
+        _stream.Write("<div class=""para"">")
         node.Stuff.Accept(Me)
-        _stream.WriteLine("</p>")
+        _stream.WriteLine("</div>")
     End Sub
 
     Public Sub Visit(node As LiteralLF) Implements IVisitor.Visit
