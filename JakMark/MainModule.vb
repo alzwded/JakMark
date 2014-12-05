@@ -145,6 +145,9 @@ Module MainModule
 
         Dim visitor As IOutputProvider = OutputProviderFactory(ot, sw, otherData)
 
+        REM TODO figure out some better and more portable way
+        REM      of generating the TOC. Having it intertwined with
+        REM      regular traversal is stupid.
         visitor.Prologue()
         visitor.Process(rn)
         visitor.Epilogue()
