@@ -10,13 +10,19 @@ Public Class HtmlVisitor
     Private _title As String
     Private _footNotes As Dictionary(Of Integer, String)
     Private _usedHeadingIds As Dictionary(Of String, Integer)
+    Private _toc As Boolean
+    Private _tocBuilder As List(Of Tuple(Of Integer, String, String))
 
-    Public Sub New(sw As TextWriter, Optional fullHtml As Boolean = False, Optional title As String = "")
+    Public Sub New(sw As TextWriter, Optional toc As Boolean = False, Optional fullHtml As Boolean = False, Optional title As String = "")
         Me._stream = sw
         _title = title
         _footNotes = New Dictionary(Of Integer, String)
         _usedHeadingIds = New Dictionary(Of String, Integer)
         _fullHtml = fullHtml
+        _toc = toc
+        If toc Then
+            _tocBuilder = New List(Of Tuple(Of Integer, String, String))
+        End If
     End Sub
 
     Public Sub Prologue() Implements IOutputProvider.Prologue
@@ -32,8 +38,22 @@ Public Class HtmlVisitor
                           "a.small_permalink { text-decoration: none; color:black; }" & _
                           "a.small_permalink span { color: transparent; font-size: 50% }" & _
                           "a.small_permalink:hover span { color:black }")
+        If _toc Then
+            _stream.WriteLine("<script type=""text/javascript"">")
+            _stream.WriteLine("function __x_initTOC() { " & vbLf & _
+                              "    document.getElementById('__x_toc_1').innerHTML = document.getElementById('__x_toc_2').innerHTML" & vbLf & _
+                              "    document.getElementById('__x_toc_2').style.visibility = 'hidden'" & vbLf & _
+                              "    document.getElementById('__x_toc_2').style.display = 'none'" & vbLf & _
+                              "}" & vbLf)
+            _stream.WriteLine("</script>")
+        End If
         _stream.WriteLine("</head>")
-        _stream.WriteLine("<body>")
+        If _toc Then
+            _stream.WriteLine("<body onload=""__x_initTOC()"">")
+            _stream.WriteLine("<span id=""__x_toc_1""></span>")
+        Else
+            _stream.WriteLine("<body>")
+        End If
     End Sub
 
     Public Sub Epilogue() Implements IOutputProvider.Epilogue
@@ -46,6 +66,35 @@ Public Class HtmlVisitor
         For Each li In list
             _stream.WriteLine("<p id=""fn:{0}"">{0}. {1} <a href=""#fnref:{0}"">Back</a></p>", li.Key, li.Value)
         Next
+
+        If _toc Then
+            _stream.WriteLine("<span id=""__x_toc_2"">")
+            _stream.WriteLine("<h1>TOC</h1>")
+            _stream.WriteLine("<ol>")
+            Dim prev = 1
+            For Each i In _tocBuilder
+                If i.Item1 > prev Then
+                    Dim lvl = prev
+                    Do While lvl < i.Item1
+                        _stream.WriteLine("<ol>")
+                        lvl = lvl + 1
+                    Loop
+                ElseIf i.Item1 < prev Then
+                    Dim lvl = prev
+                    Do While lvl > i.Item1
+                        _stream.WriteLine("</ol>")
+                        lvl = lvl - 1
+                    Loop
+                End If
+                prev = i.Item1
+                _stream.WriteLine("<li><a href=""#{1}"">{0}</a></li>", i.Item2, i.Item3)
+            Next
+            Do While prev > 0
+                prev = prev - 1
+                _stream.Write("</ol>")
+            Loop
+            _stream.WriteLine("</span>")
+        End If
 
         If Not _fullHtml Then Return
         _stream.WriteLine("</body></html>")
@@ -86,7 +135,7 @@ Public Class HtmlVisitor
         End Select
     End Sub
 
-    Private Function ExtractHeadingId(str As String) As String
+    Private Function GenerateHeadingId(str As String) As String
         Static r = New Regex("[a-zA-Z0-9]")
         Dim chars = From c In str.ToCharArray()
                     Where r.Match(c.ToString()).Success
@@ -106,8 +155,12 @@ Public Class HtmlVisitor
     End Function
 
     Public Sub Visit(node As Heading) Implements IVisitor.Visit
+        Dim hid = GenerateHeadingId(node.Text)
         _stream.WriteLine("<a class=""small_permalink"" href=""#{2}""><h{0} class=""jmheading"" id=""{2}"">{1}" & _
-                          "<span>&nbsp;&nbsp;&#8734;</span></h{0}></a>", node.Level, node.Text, ExtractHeadingId(node.Text))
+                          "<span>&nbsp;&nbsp;&#8734;</span></h{0}></a>", node.Level, node.Text, hid)
+        If _toc Then
+            _tocBuilder.Add(New Tuple(Of Integer, String, String)(node.Level, node.Text, hid))
+        End If
     End Sub
 
     Public Sub Visit(node As Link) Implements IVisitor.Visit

@@ -34,10 +34,13 @@ Module MainModule
         Console.WriteLine("{0} v{1} Copyright (c) 2014 Vlad Meșco", appName, My.Application.Info.Version.ToString())
         Console.WriteLine("Usage:")
         Console.WriteLine("JakMark /?          print this message")
-        Console.WriteLine("JakMark [if] [of]   reads the JM file <if> and writes to <of>")
+        Console.WriteLine("JakMark [options] [if] [of]   reads the JM file <if> and writes to <of>")
         Dim blanks = New String(" "c, appName.Length)
         Console.WriteLine("JakMark             infile or outfile can be ""-"" for stdin/stdout respectively")
         Console.WriteLine("JakMark             if <of> is a file name, the result is a full html document")
+        Console.WriteLine()
+        Console.WriteLine("Options:")
+        Console.WriteLine("--toc               for html, it creates a table of contents")
         Console.WriteLine()
         Console.WriteLine("Available output targets for <of>:")
         Console.WriteLine("HTML               .html, <file>.html, <file>.htm")
@@ -47,12 +50,42 @@ Module MainModule
         Console.WriteLine("Only giving the extension as <of> will write out a full document to stdout")
     End Sub
 
-    Sub Main(ByVal args() As String)
+    Sub ProcessArgs(ByRef args As List(Of String), _
+                    ByRef otherData As Dictionary(Of String, Object))
+        Dim i As Integer = 0
+        Do While (i < args.Count)
+            If args(i) = "/?" OrElse args(i) = "-h" Then
+                args.RemoveAt(i)
+                Continue Do
+            ElseIf args(i) = "--" Then
+                args.RemoveAt(i)
+                Exit Sub
+            ElseIf args(i).StartsWith("--") Then
+                Dim s = args(i).Substring(2)
+                Select Case s
+                    Case "toc"
+                        otherData.Add("toc", True)
+                        args.RemoveAt(i)
+                        Continue Do
+                    Case "help"
+                        Usage()
+                        Environment.Exit(255)
+                End Select
+            End If
+            i = i + 1
+        Loop
+    End Sub
+
+    Sub Main(ByVal argsRaw() As String)
         Console.OutputEncoding = System.Text.Encoding.UTF8
         Dim swIn As System.IO.StreamReader
         Dim otherData = New Dictionary(Of String, Object)
 
-        If args.Length > 0 Then
+        Dim args = New List(Of String)(argsRaw)
+
+        ProcessArgs(args, otherData)
+
+        If args.Count > 0 Then
             If args(0) = "/?" OrElse args(0) = "-h" Then
                 Usage()
                 Environment.Exit(255)
@@ -69,7 +102,7 @@ Module MainModule
 
         Dim ot = OutputType.Html
         Dim sw As StreamWriter = Nothing
-        If args.Length > 1 Then
+        If args.Count > 1 Then
             If args(1) = "-" Then
                 sw = New StreamWriter(Console.OpenStandardOutput())
                 ot = OutputType.Html
@@ -128,9 +161,11 @@ Module MainModule
             Case OutputType.Html
                 Dim fullHtml = False
                 Dim title = "Document"
+                Dim toc = False
                 If otherData.ContainsKey("full") Then fullHtml = otherData("full")
                 If otherData.ContainsKey("title") Then title = otherData("title")
-                Return New HtmlVisitor(sw, fullHtml, title)
+                If otherData.ContainsKey("toc") Then toc = otherData("toc")
+                Return New HtmlVisitor(sw, toc, fullHtml, title)
             Case OutputType.GHMarkDown
                 Return New GHMarkDown(sw)
             Case OutputType.WikiPlex
