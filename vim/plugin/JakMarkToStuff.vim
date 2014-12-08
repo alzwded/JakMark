@@ -26,3 +26,6 @@ function! JakMarkToHtmlSnippet()
 \       ."p\<ESC>"
 \       .l:cmd."\<CR>"
 endfunction
+
+:map <C-L>[ ?^\s*[#]\+\s*.*$<CR>
+:map <C-L>] /^\s*[#]\+\s*.*$<CR>
