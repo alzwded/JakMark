@@ -362,7 +362,7 @@
             Loop
             _tokens.Remove(_tokens.First())
         Loop
-        _tokens.Remove(_tokens.First())
+        If _tokens.Count <> 0 Then _tokens.Remove(_tokens.First())
 
         Return New Paragraph With {.Stuff = collection}
     End Function
