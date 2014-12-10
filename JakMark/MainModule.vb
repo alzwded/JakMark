@@ -55,7 +55,8 @@ Module MainModule
         Dim i As Integer = 0
         Do While (i < args.Count)
             If args(i) = "/?" OrElse args(i) = "-h" Then
-                args.RemoveAt(i)
+                Usage()
+                Environment.Exit(255)
                 Continue Do
             ElseIf args(i) = "--" Then
                 args.RemoveAt(i)
