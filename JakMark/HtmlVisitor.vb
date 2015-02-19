@@ -30,6 +30,7 @@ Public Class HtmlVisitor
         ' write out html, head, default css etc
         _stream.WriteLine("<!DOCTYPE html>")
         _stream.WriteLine("<html><head>")
+        _stream.WriteLine("<meta charset=""utf-8"">")
         If _title.Length > 0 Then
             _stream.WriteLine("<title>{0}</title>", _title)
         End If
@@ -121,7 +122,8 @@ Public Class HtmlVisitor
     End Sub
 
     Public Sub Visit(node As Fenced) Implements IVisitor.Visit
-        _stream.WriteLine("<div style=""page-break-inside:avoid""><code>{0}</code></div>", node.Text)
+        Dim escaped = Web.HttpUtility.HtmlEncode(node.Text)
+        _stream.WriteLine("<div style=""page-break-inside:avoid""><code>{0}</code></div>", escaped)
     End Sub
 
     Public Sub Visit(node As Footnote) Implements IVisitor.Visit
@@ -135,18 +137,19 @@ Public Class HtmlVisitor
     End Sub
 
     Public Sub Visit(node As FormattedText) Implements IVisitor.Visit
+        Dim escaped = Web.HttpUtility.HtmlEncode(node.Text)
         Select Case node.Type
             Case FormattedText.FormattingType.Bold
-                _stream.Write("<strong>{0}</strong>", node.Text)
+                _stream.Write("<strong>{0}</strong>", escaped)
             Case FormattedText.FormattingType.Italic
-                _stream.Write("<em>{0}</em>", node.Text)
+                _stream.Write("<em>{0}</em>", escaped)
             Case FormattedText.FormattingType.Monospaced
-                _stream.Write("<code>{0}</code>", node.Text)
+                _stream.Write("<code>{0}</code>", escaped)
         End Select
     End Sub
 
     Private Function GenerateHeadingId(str As String) As String
-        Static r = New Regex("[a-zA-Z0-9]")
+        Static r = New Regex("[\w\d]")
         Dim chars = From c In str.ToCharArray()
                     Where r.Match(c.ToString()).Success
                     Select s = c.ToString()
@@ -169,7 +172,7 @@ Public Class HtmlVisitor
         _stream.WriteLine("<div class=""headingNoPageBreak""><a class=""small_permalink"" href=""#{2}""><h{0} class=""jmheading"" id=""{2}"">{1}" & _
                           "<span>&nbsp;&nbsp;&#8734;</span></h{0}></a></div>", node.Level, node.Text, hid)
         If _toc Then
-            _tocBuilder.Add(New Tuple(Of Integer, String, String)(node.Level, node.Text, hid))
+            _tocBuilder.Add(New Tuple(Of Integer, String, String)(node.Level, Web.HttpUtility.HtmlEncode(node.Text), hid))
         End If
     End Sub
 
@@ -206,7 +209,7 @@ Public Class HtmlVisitor
         _stream.WriteLine("<thead>")
         _stream.Write("<tr>")
         For Each i In node.Header
-            _stream.Write("<th>{0}</th>", i)
+            _stream.Write("<th>{0}</th>", Web.HttpUtility.HtmlEncode(i))
         Next
         _stream.WriteLine("</tr>")
         _stream.WriteLine("</thead>")
