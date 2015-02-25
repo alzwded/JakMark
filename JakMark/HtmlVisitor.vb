@@ -34,14 +34,18 @@ Public Class HtmlVisitor
         If _title.Length > 0 Then
             _stream.WriteLine("<title>{0}</title>", _title)
         End If
+        REM TODO I got carried away with 'OMG AVOID BREAKPOINTS' styles here
+        REM      these will need to be cleaned up one day
         _stream.WriteLine("<style>{0}</style>",
                           "div.para { margin: 1em 0px; }" & _
                           "code { font-family: monospace; white-space: pre-wrap; page-break-inside: avoid; page-break-before: auto; page-break-after: auto; position: relative}" & _
                           ".footnote { vertical-align: super; font-size: 50%; }" & _
                           "a.small_permalink { text-decoration: none; color:black; }" & _
-                          "a.small_permalink span { color: transparent; font-size: 50% }" & _
-                          "a.small_permalink:hover span { color:black }" & _
-                          "pre { page-break-inside: avoid }" & _
+                          "a.small_permalink span { color: transparent; display: none !important; visibility:hidden; font-size: 0%}" & _
+                          "a.small_permalink:hover span { color:black; display: inline !important; visibility:visible; font-size: 50%}" & _
+                          "pre { page-break-inside: avoid; page-break-before: auto; page-break-after: auto; position:relative }" & _
+                          "code.fenced { display:block; line-height:100% }" & _
+                          "pre.fenced { display:block; line-height:100% }" & _
                           ".headingNoPageBreak { page-break-after: avoid; page-break-inside: avoid; position: relative; display: block } ")
         If _toc Then
         End If
@@ -123,7 +127,7 @@ Public Class HtmlVisitor
 
     Public Sub Visit(node As Fenced) Implements IVisitor.Visit
         Dim escaped = Web.HttpUtility.HtmlEncode(node.Text)
-        _stream.WriteLine("<div style=""page-break-inside:avoid""><pre><code>{0}</code></pre></div>", escaped)
+        _stream.WriteLine("<div style=""display:block;position:reltive;page-break-inside:avoid; page-break-before:auto; page-break-after:auto""><pre class=""fenced""><code class=""fenced"">{0}</code></pre></div>", escaped)
     End Sub
 
     Public Sub Visit(node As Footnote) Implements IVisitor.Visit
