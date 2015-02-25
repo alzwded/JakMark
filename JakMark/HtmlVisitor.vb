@@ -123,7 +123,7 @@ Public Class HtmlVisitor
 
     Public Sub Visit(node As Fenced) Implements IVisitor.Visit
         Dim escaped = Web.HttpUtility.HtmlEncode(node.Text)
-        _stream.WriteLine("<div style=""page-break-inside:avoid""><code>{0}</code></div>", escaped)
+        _stream.WriteLine("<div style=""page-break-inside:avoid""><pre><code>{0}</code></pre></div>", escaped)
     End Sub
 
     Public Sub Visit(node As Footnote) Implements IVisitor.Visit
