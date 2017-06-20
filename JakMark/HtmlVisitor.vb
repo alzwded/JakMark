@@ -46,7 +46,9 @@ Public Class HtmlVisitor
                           "pre { page-break-inside: avoid; page-break-before: auto; page-break-after: auto; position:relative }" & _
                           "code.fenced { display:block; line-height:100% }" & _
                           "pre.fenced { display:block; line-height:100% }" & _
-                          ".headingNoPageBreak { page-break-after: avoid; page-break-inside: avoid; position: relative; display: block } ")
+                          ".headingNoPageBreak { page-break-after: avoid; page-break-inside: avoid; position: relative; display: block }" & _
+                          "img.wide { display:block; width:80%; margin: 0 auto } " & _
+                          "img.inline { display:inline }")
         If _toc Then
         End If
         _stream.WriteLine("</head>")
@@ -128,6 +130,15 @@ Public Class HtmlVisitor
     Public Sub Visit(node As Fenced) Implements IVisitor.Visit
         Dim escaped = Web.HttpUtility.HtmlEncode(node.Text)
         _stream.WriteLine("<div style=""display:block;position:reltive;page-break-inside:avoid; page-break-before:auto; page-break-after:auto""><pre class=""fenced""><code class=""fenced"">{0}</code></pre></div>", escaped)
+    End Sub
+
+    Public Sub Visit(node As Image) Implements IVisitor.Visit
+        Dim escaped = Web.HttpUtility.HtmlEncode(node.Path)
+        Dim altText = Web.HttpUtility.HtmlEncode(node.Text)
+        Dim classa = "inline"
+        If node.Wide Then classa = "wide"
+
+        _stream.WriteLine("<img class=""{2}"" src=""{0}"" title=""{1}""/>", escaped, altText, classa)
     End Sub
 
     Public Sub Visit(node As Footnote) Implements IVisitor.Visit

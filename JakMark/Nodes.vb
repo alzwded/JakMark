@@ -1,6 +1,7 @@
 ﻿Public Interface IVisitor
     ' line entry-point nodes
     Sub Visit(node As Fenced)    ' has text
+    Sub Visit(node As Image)     ' has text
     Sub Visit(node As Heading)   ' has text
     ' line entry-point container nodes
     Sub Visit(node As Container) ' has children
@@ -90,6 +91,18 @@ Public Class Fenced
     Implements ITreeNode
 
     Public Property Text As String
+
+    Public Sub Accept(visitor As IVisitor) Implements ITreeNode.Accept
+        visitor.Visit(Me)
+    End Sub
+End Class
+
+Public Class Image
+    Implements ITreeNode
+
+    Public Property Path As String
+    Public Property Text As String
+    Public Property Wide As Boolean
 
     Public Sub Accept(visitor As IVisitor) Implements ITreeNode.Accept
         visitor.Visit(Me)

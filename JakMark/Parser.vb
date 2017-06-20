@@ -29,6 +29,8 @@ Structure Token
         Text
         CommentOpen
         CommentClose
+        ImageOpen
+        WideImageOpen
     End Enum
 
     Public Type As TokenType

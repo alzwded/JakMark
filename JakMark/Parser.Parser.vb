@@ -284,6 +284,35 @@
             .Text = text.Text
             }
     End Function
+    Private Function ParseImage() As ITreeNode
+        Dim isWide As Boolean = True
+        Select Case _tokens.First().Type
+            Case Token.TokenType.ImageOpen
+                isWide = False
+            Case Token.TokenType.WideImageOpen
+                isWide = True
+        End Select
+
+        _tokens.Remove(_tokens.First())
+        Dim text = _tokens.First()
+        _tokens.Remove(text)
+        If text.Type <> Token.TokenType.Text Then Throw New SyntaxErrorException()
+        If _tokens.First().Type <> Token.TokenType.SquareClose Then Throw New SyntaxErrorException()
+        _tokens.Remove(_tokens.First())
+        If _tokens.First().Type <> Token.TokenType.LParenOpen Then Throw New SyntaxErrorException()
+        _tokens.Remove(_tokens.First())
+        Dim path = _tokens.First()
+        _tokens.Remove(path)
+        If path.Type <> Token.TokenType.Text Then Throw New SyntaxErrorException()
+        If _tokens.First().Type <> Token.TokenType.LParenClose Then Throw New SyntaxErrorException()
+        _tokens.Remove(_tokens.First())
+
+        Return New Image() With {
+            .Path = path.Text,
+            .Text = text.Text,
+            .Wide = isWide
+            }
+    End Function
 
     Private Function ParseNext() As ITreeNode
         Do
@@ -308,6 +337,10 @@
                     Return ParseMonoText()
                 Case Token.TokenType.SquareOpen
                     Return ParseLink()
+                Case Token.TokenType.ImageOpen
+                    Return ParseImage()
+                Case Token.TokenType.WideImageOpen
+                    Return ParseImage()
                 Case Token.TokenType.Note
                     Return ParseNote()
                 Case Token.TokenType.TableOpen

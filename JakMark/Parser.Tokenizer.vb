@@ -11,6 +11,8 @@
             {"\!", Token.TokenType.Escape},
             {"**", Token.TokenType.DoubleStar},
             {"*", Token.TokenType.Star},
+            {"[img:", Token.TokenType.ImageOpen},
+            {"[img+:", Token.TokenType.WideImageOpen},
             {"[^", Token.TokenType.Note},
             {":[^", Token.TokenType.NoteRefOpen},
             {":[", Token.TokenType.RefOpen},
@@ -33,6 +35,8 @@
                                 Token.TokenType.DoubleStar}
         Dim asymetricTokens = _
             New Dictionary(Of Token.TokenType, String) From {
+                {Token.TokenType.ImageOpen, "]"},
+                {Token.TokenType.WideImageOpen, "]"},
                 {Token.TokenType.SquareOpen, "]"},
                 {Token.TokenType.Note, "]"},
                 {Token.TokenType.NoteRefOpen, "]:"},

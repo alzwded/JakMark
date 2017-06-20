@@ -60,6 +60,18 @@ Public Class GHMarkDown
         _blankLine = True
     End Sub
 
+    Public Sub Visit(node As Image) Implements IVisitor.Visit
+        If node.Wide And Not _blankLine Then _stream.WriteLine()
+        _stream.Write("![{0}]({1})", node.Text, node.Path)
+        If node.Wide Then
+            _stream.WriteLine()
+            _stream.WriteLine()
+            _blankLine = True
+        Else
+            _blankLine = False
+        End If
+    End Sub
+
     Public Sub Visit(node As Footnote) Implements IVisitor.Visit
         Dim newId = _footNotes.Count + 1
         _stream.WriteLine("<a name=""fnref{0}""></a>[{0}](#fn{0})", newId)

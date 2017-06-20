@@ -87,6 +87,18 @@ Public Class WikiPlex
         _blankLine = False
     End Sub
 
+    Public Sub Visit(node As Image) Implements IVisitor.Visit
+        If node.Wide And Not _blankLine Then _stream.WriteLine()
+        _stream.Write("[image:{0}|{1}]", node.Text, node.Path)
+        If node.Wide Then
+            _stream.WriteLine()
+            _stream.WriteLine()
+            _blankLine = True
+        Else
+            _blankLine = False
+        End If
+    End Sub
+
     Public Sub Visit(node As List) Implements IVisitor.Visit
         If Not _blankLine Then _stream.WriteLine()
         If node.Numbered Then

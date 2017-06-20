@@ -75,3 +75,9 @@ Lists:
   # numbered2
   </list>
 </list>
+
+## Images
+
+[img+:A wide image]{C:\Users\Public\Pictures\Sample Pictures\Penguins.jpg}
+
+Here is an [img:inlined]{C:\Users\Public\Pictures\Sample Pictures\Penguins.jpg} picture
