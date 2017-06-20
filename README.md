@@ -33,7 +33,7 @@ TODO
   - [x] Make it run on the latest stable version of [Mono](http://www.mono-project.com/download/#download-lin)  
         Well, it runs. But it won't compile.
   - [ ] Make it compile on mono.  
-        This is a problem. Mono's VBNC is only at VB.Net 8, which lacks LINQ, New-With, Lambdas, automatic properties, among others. Unfortunately, I use those extensively. Either a) I dumb it down to VB.Net 8.0 level, or b) automagically convert the whole project to C# and hope for the best. Both involve effort. Somehow, I like how the VB code looks for this project, I can't say I prefer either alternative. Maybe mono will update their VB compiler and/or MS will release theirs? Who knows.  
+        This is a problem. Mono's VBNC is only at VB.Net 8, which lacks LINQ, New-With, Lambdas, automatic properties, among others. Unfortunately, I use those extensively. Either a) I dumb it down to VB.Net 8.0 level, or b) automagically convert the whole project to C# and hope for the best (or c), rewrite to a non-proprietary language that *doesn't* require magic runtimes; even though in this case the runtime's actually there, rather the compiler's the problem). Both involve effort. Somehow, I like how the VB code looks for this project, I can't say I prefer either alternative. Maybe mono will update their VB compiler and/or MS will release theirs? Who knows.  
         Suits me for using a proprietary language to develop an open source app.
 
 If you want to use JakMark and you have some feature request (there are no bugs), drop a line.
