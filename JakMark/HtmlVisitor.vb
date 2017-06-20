@@ -48,7 +48,10 @@ Public Class HtmlVisitor
                           "pre.fenced { display:block; line-height:100% }" & _
                           ".headingNoPageBreak { page-break-after: avoid; page-break-inside: avoid; position: relative; display: block }" & _
                           "img.wide { display:block; width:80%; margin: 0 auto } " & _
-                          "img.inline { display:inline }")
+                          "img.inline { display:inline }" & _
+                          "table.table { border-style:solid;border-width:2px }" & _
+                          "table.table td { border-style:solid;border-width:1px}" & _
+                          "table.table th { border-style:solid;border-width:1px}")
         If _toc Then
         End If
         _stream.WriteLine("</head>")
@@ -220,7 +223,7 @@ Public Class HtmlVisitor
     End Sub
 
     Public Sub Visit(node As Table) Implements IVisitor.Visit
-        _stream.WriteLine("<table>")
+        _stream.WriteLine("<table class=""table"">")
         _stream.WriteLine("<thead>")
         _stream.Write("<tr>")
         For Each i In node.Header
