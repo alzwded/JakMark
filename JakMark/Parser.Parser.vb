@@ -277,6 +277,9 @@
         Dim text = _tokens.First()
         _tokens.Remove(text)
         If text.Type <> Token.TokenType.Text Then Throw New SyntaxErrorException()
+        If text.Text.StartsWith(vbLf) Then
+            text.Text = text.Text.Substring(1)
+        End If
         If _tokens.First().Type <> Token.TokenType.Fence Then Throw New SyntaxErrorException()
         _tokens.Remove(_tokens.First())
 
