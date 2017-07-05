@@ -12,6 +12,7 @@ Public Class HtmlVisitor
     Private _usedHeadingIds As Dictionary(Of String, Integer)
     Private _toc As Boolean
     Private _tocBuilder As List(Of Tuple(Of Integer, String, String))
+    Private _indexImage As Integer = 1
 
     Public Sub New(sw As TextWriter, Optional toc As Boolean = False, Optional fullHtml As Boolean = False, Optional title As String = "")
         Me._stream = sw
@@ -38,6 +39,7 @@ Public Class HtmlVisitor
         REM      these will need to be cleaned up one day
         _stream.WriteLine("<style>{0}</style>",
                           "div.para { margin: 1em 0px; }" & _
+                          ".jmheading { page-break-after: avoid; page-break-inside: avoid }" & _
                           "code { font-family: monospace; white-space: pre-wrap; page-break-inside: avoid; page-break-before: auto; page-break-after: auto; position: relative}" & _
                           ".footnote { vertical-align: super; font-size: 50%; }" & _
                           "a.small_permalink { text-decoration: none; color:black; }" & _
@@ -47,6 +49,8 @@ Public Class HtmlVisitor
                           "code.fenced { display:block; line-height:100% }" & _
                           "pre.fenced { display:block; line-height:100% }" & _
                           ".headingNoPageBreak { page-break-after: avoid; page-break-inside: avoid; position: relative; display: block }" & _
+                          "div.imgContainer { display:block; width:100%; margin: 0 auto; text-align: center; page-break-inside: avoid; page-break-before: auto; page-break-after: auto }" & _
+                          "div.imgContainer span { width:auto; margin:auto; display:inline-block; font-size: 80%; font-style: italic; border-bottom: 1px solid } " & _
                           "img.wide { display:block; width:80%; margin: 0 auto } " & _
                           "img.inline { display:inline }" & _
                           "table.table { border-style:solid;border-width:2px }" & _
@@ -139,9 +143,19 @@ Public Class HtmlVisitor
         Dim escaped = Web.HttpUtility.HtmlEncode(node.Path)
         Dim altText = Web.HttpUtility.HtmlEncode(node.Text)
         Dim classa = "inline"
-        If node.Wide Then classa = "wide"
 
-        _stream.WriteLine("<img class=""{2}"" src=""{0}"" title=""{1}""/>", escaped, altText, classa)
+        If node.Wide Then
+            _stream.Write("<div class=""imgContainer"">")
+            _stream.Write("<img class=""wide"" src=""{0}"" title=""{1}"" />", escaped, altText)
+            _stream.Write("<span>Fig. {0} &mdash; {1}</span>", _indexImage, altText)
+            _stream.Write("</div>")
+            _stream.WriteLine()
+            _indexImage += 1
+        Else
+            _stream.WriteLine("<img class=""inline"" src=""{0}"" title=""{1}""/>", escaped, altText)
+        End If
+        REM If node.Wide Then classa = "wide"
+        REM _stream.WriteLine("<img class=""{2}"" src=""{0}"" title=""{1}""/>", escaped, altText, classa)
     End Sub
 
     Public Sub Visit(node As Footnote) Implements IVisitor.Visit
