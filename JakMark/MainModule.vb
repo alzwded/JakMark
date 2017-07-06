@@ -141,7 +141,14 @@ Module MainModule
         '     sw.WriteLine(tok)
         ' Next
 
-        prs.Parse()
+        Try
+            prs.Parse()
+        Catch ex As Exception
+            Console.Error.WriteLine("Exception in parser; last block started at line " & prs.LastLine)
+            Console.Error.WriteLine(ex.ToString())
+            Console.Error.WriteLine("Not producing any output.")
+            Environment.Exit(2)
+        End Try
         Dim rn = prs.RootNode
 
         Dim visitor As IOutputProvider = OutputProviderFactory(ot, sw, otherData)

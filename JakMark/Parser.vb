@@ -35,6 +35,7 @@ Structure Token
 
     Public Type As TokenType
     Public Text As String
+    Public Line As Integer
 
     Public Overrides Function ToString() As String
         Return "Token[" & Type.ToString() & ", " & Text & "]"

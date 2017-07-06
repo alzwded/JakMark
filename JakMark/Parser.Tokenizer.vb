@@ -2,6 +2,7 @@
 
 
     Private Sub Tokenize()
+        Dim lineno = 1
         Dim whitespaceTokens() = {" ", "" & vbTab}
         Dim lineFeedTokens() = {"" & vbLf, "" & vbCr, "" & vbCrLf}
         Dim interjectingDict As Dictionary(Of String, Token.TokenType) = New Dictionary(Of String, Token.TokenType) From {
@@ -54,10 +55,11 @@
         Dim line = _stream.ReadLine()
         Do While line.Length > 0 OrElse _stream.Peek() > -1
             If line.Length = 0 Then
-                _tokens.Add(New Token With {.Type = Token.TokenType.LineFeed})
+                _tokens.Add(New Token With {.Type = Token.TokenType.LineFeed, .Line = lineno})
 
                 If _stream.Peek() > -1 Then
                     line = _stream.ReadLine()
+                    lineno += 1
                     Continue Do
                 Else
                     Exit Do
@@ -65,9 +67,10 @@
             End If
 
             If line = "  " Then
-                _tokens.Add(New Token With {.Type = Token.TokenType.DoubleSpace})
+                _tokens.Add(New Token With {.Type = Token.TokenType.DoubleSpace, .Line = lineno})
                 If _stream.Peek() > -1 Then
                     line = _stream.ReadLine()
+                    lineno += 1
                     Continue Do
                 Else
                     Exit Do
@@ -76,7 +79,7 @@
 
             For Each kv In interjectingDict
                 If line.StartsWith(kv.Key) Then
-                    _tokens.Add(New Token With {.Type = kv.Value})
+                    _tokens.Add(New Token With {.Type = kv.Value, .Line = lineno})
                     line = line.Substring(kv.Key.Length)
 
                     Dim matchingToken As String = ""
@@ -99,6 +102,7 @@
                                 Exit Do
                             End If
                             line = _stream.ReadLine
+                            lineno += 1
                         Loop
 
                         Dim pos = line.IndexOf(matchingToken)
@@ -111,8 +115,8 @@
                             line = ""
                         End If
 
-                        _tokens.Add(New Token With {.Type = Token.TokenType.Text, .Text = text})
-                        _tokens.Add(New Token With {.Type = matchingTokenToken})
+                        _tokens.Add(New Token With {.Type = Token.TokenType.Text, .Text = text, .Line = lineno})
+                        _tokens.Add(New Token With {.Type = matchingTokenToken, .Line = lineno})
                     End If
 
                     Continue Do
@@ -124,7 +128,7 @@
                 For Each tok In whitespaceTokens
                     If line.StartsWith(tok) Then
                         If Not wsFound Then _
-                            _tokens.Add(New Token With {.Type = Token.TokenType.Whitespace})
+                            _tokens.Add(New Token With {.Type = Token.TokenType.Whitespace, .Line = lineno})
                         line = line.Substring(tok.Length)
                         wsFound = True
                         Continue Do
@@ -140,17 +144,17 @@
                 If line(i) = " "c OrElse line(i) = vbTab Then
                     Dim text = line.Substring(0, i)
                     line = line.Substring(i)
-                    _tokens.Add(New Token With {.Type = Token.TokenType.Text, .Text = text})
+                    _tokens.Add(New Token With {.Type = Token.TokenType.Text, .Text = text, .Line = lineno})
                     Continue Do
                 End If
             Next
-            _tokens.Add(New Token With {.Type = Token.TokenType.Text, .Text = line})
+            _tokens.Add(New Token With {.Type = Token.TokenType.Text, .Text = line, .Line = lineno})
             line = ""
         Loop
 
         If _tokens.Count > 0 _
             AndAlso Not _tokens(_tokens.Count - 1).Type = Token.TokenType.LineFeed Then
-            _tokens.Add(New Token With {.Type = Token.TokenType.LineFeed})
+            _tokens.Add(New Token With {.Type = Token.TokenType.LineFeed, .Line = lineno})
         End If
     End Sub
 

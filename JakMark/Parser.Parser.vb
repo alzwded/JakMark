@@ -2,6 +2,14 @@
 
     Private _notes As Dictionary(Of String, Footnote)
     Private _links As Dictionary(Of String, Link)
+    Private _lastCount As Integer = -1
+    Private _lastEntryLine As Integer = 1
+
+    Public ReadOnly Property LastLine As Integer
+        Get
+            Return _lastEntryLine
+        End Get
+    End Property
 
     Private Function ParseHeading() As ITreeNode
         Dim level = 0
@@ -247,12 +255,18 @@
         Do While _tokens.First().Type = Token.TokenType.LineFeed _
             OrElse _tokens.First().Type = Token.TokenType.Whitespace
             _tokens.Remove(_tokens.First())
+            If _tokens.Count = 0 Then
+                Throw New SyntaxErrorException("Missing </list>")
+            End If
         Loop
 
         Dim list = New List()
         list.Numbered = (_tokens.First().Type = Token.TokenType.Hash)
 
         Do
+            If _tokens.Count = 0 Then
+                Throw New SyntaxErrorException("Missing </list>")
+            End If
             If _tokens.First().Type = Token.TokenType.ListClose Then Exit Do
             If _tokens.First().Type = Token.TokenType.Hash OrElse
                 _tokens.First().Type = Token.TokenType.Dash Then
@@ -261,7 +275,13 @@
             End If
 
             If _tokens.First().Type = Token.TokenType.LineFeed Then
-                _tokens.Remove(_tokens.First())
+                Do While _tokens.First().Type = Token.TokenType.LineFeed _
+                   OrElse _tokens.First().Type = Token.TokenType.Whitespace
+                    _tokens.Remove(_tokens.First())
+                    If _tokens.Count = 0 Then
+                        Throw New SyntaxErrorException("Missing </list>")
+                    End If
+                Loop
                 Continue Do
             Else
                 Dim tok = ParseNext()
@@ -360,7 +380,7 @@
                     Return New PlainText("#")
                 Case Token.TokenType.Dash
                     _tokens.Remove(tok)
-                    Return New PlainText("-")
+                    Return New PlainText("+")
                 Case Token.TokenType.LParenOpen
                     _tokens.Remove(tok)
                     Return New PlainText("{")
@@ -371,8 +391,28 @@
                     _tokens.Remove(tok)
                     Return New LiteralLF()
                 Case Else
+                    Dim message = "Syntax error: infinite loop detected in parser, next tokens are: "
+                    For i = 0 To Math.Min(5, _tokens.Count)
+                        message += vbLf & _tokens(i).Type.ToString() & ":" & _tokens(i).Text
+                    Next
+                    message += vbLf & "Maybe you have a runaway '*','`','\!' ?"
+                    Throw New SyntaxErrorException(message)
                     REM FIXME this shouldn't be necessary...
                     REM       probably something stupid with weird chars
+                    If _tokens.Count = _lastCount Then
+                        Dim messagea = "Bug in parser: infinite loop detected, next tokens are: "
+                        For i = 0 To Math.Min(5, _tokens.Count)
+                            messagea += vbLf & _tokens(i).Type.ToString() & ":" & _tokens(i).Text
+                        Next
+                        Throw New SyntaxErrorException(messagea)
+                    Else
+                        _lastCount = _tokens.Count
+
+                        Console.Error.WriteLine("Possible bug in parser, trying to recover; next tokens are:")
+                        For i = 0 To Math.Min(5, _tokens.Count)
+                            Console.Error.WriteLine(_tokens(i).Type.ToString() & ":" & _tokens(i).Text)
+                        Next
+                    End If
                     Return New Container()
             End Select
         Loop
@@ -407,6 +447,7 @@
         Dim ret = New Container
 
         Do While _tokens.Count > 0
+            _lastEntryLine = _tokens.First().Line
             Select Case _tokens.First().Type
                 Case Token.TokenType.Whitespace
                     ret.Children.Add(New Whitespace())
@@ -421,12 +462,10 @@
                     ParseNoteRef()
                 Case Token.TokenType.CommentOpen
                     ConsumeComment()
-                    'Case Token.TokenType.ListOpen
-                    '    REM apparently a list can't be embedded inside a P tag
-                    '    ret.Children.Add(ParseList())
-                    'Case Token.TokenType.TableOpen
-                    '    REM apparently a table can't be embedded inside a P tag
-                    '    ret.Children.Add(ParseTable())
+                Case Token.TokenType.ListOpen
+                    ret.Children.Add(ParseList())
+                Case Token.TokenType.TableOpen
+                    ret.Children.Add(ParseTable())
                 Case Else
                     ret.Children.Add(ParseParagraph())
             End Select
