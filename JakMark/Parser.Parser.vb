@@ -395,25 +395,8 @@
                     For i = 0 To Math.Min(5, _tokens.Count)
                         message += vbLf & _tokens(i).Type.ToString() & ":" & _tokens(i).Text
                     Next
-                    message += vbLf & "Maybe you have a runaway '*','`','\!' ?"
+                    message += vbLf & "Maybe you have a runaway '*','`','\!' ? Or it's a possible bug in the parser."
                     Throw New SyntaxErrorException(message)
-                    REM FIXME this shouldn't be necessary...
-                    REM       probably something stupid with weird chars
-                    If _tokens.Count = _lastCount Then
-                        Dim messagea = "Bug in parser: infinite loop detected, next tokens are: "
-                        For i = 0 To Math.Min(5, _tokens.Count)
-                            messagea += vbLf & _tokens(i).Type.ToString() & ":" & _tokens(i).Text
-                        Next
-                        Throw New SyntaxErrorException(messagea)
-                    Else
-                        _lastCount = _tokens.Count
-
-                        Console.Error.WriteLine("Possible bug in parser, trying to recover; next tokens are:")
-                        For i = 0 To Math.Min(5, _tokens.Count)
-                            Console.Error.WriteLine(_tokens(i).Type.ToString() & ":" & _tokens(i).Text)
-                        Next
-                    End If
-                    Return New Container()
             End Select
         Loop
     End Function
@@ -462,10 +445,6 @@
                     ParseNoteRef()
                 Case Token.TokenType.CommentOpen
                     ConsumeComment()
-                Case Token.TokenType.ListOpen
-                    ret.Children.Add(ParseList())
-                Case Token.TokenType.TableOpen
-                    ret.Children.Add(ParseTable())
                 Case Else
                     ret.Children.Add(ParseParagraph())
             End Select
