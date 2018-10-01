@@ -1,4 +1,4 @@
-﻿Partial Public Class Parser
+Partial Public Class Parser
 
     Private _notes As Dictionary(Of String, Footnote)
     Private _links As Dictionary(Of String, Link)
@@ -31,6 +31,8 @@
                 Case Token.TokenType.Text
                     text.Append(_tokens.First().Text)
                     _tokens.Remove(_tokens.First())
+                Case Else
+                    Throw New SyntaxErrorException("Token not support in heading section: " + _tokens.First().ToString())
             End Select
         Loop
         _tokens.Remove(_tokens.First())
@@ -199,7 +201,7 @@
                 Case Token.TokenType.Whitespace
                     ret.Append(" ")
                 Case Else
-                    Throw New SyntaxErrorException()
+                    Throw New SyntaxErrorException("Token not supported in header column: " + thisOne.ToString())
             End Select
         Loop
         If _tokens.First().Type = Token.TokenType.Pipe Then
