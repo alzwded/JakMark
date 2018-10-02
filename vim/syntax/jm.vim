@@ -19,7 +19,7 @@ syn match JAKMARK_pipe "[|]" containedin=JAKMARK_tableg contained
 syn region JAKMARK_fenced matchgroup=JAKMARK_fenced start="```" end="```" keepend
 syn region JAKMARK_quoted matchgroup=JAKMARK_quoted start="[\\][!]" end="[\\][!]" keepend
 syn match JAKMARK_note "\[^[^\]]*\]"
-syn match JAKMARK_link1 "\[[^^][^\]]*\]\({[^)]*}\)\?"
+syn match JAKMARK_link1 "\[[^^][^\]]*\]\({[^)]\{-}}\)\?"
 syn match JAKMARK_linkref "^\s*:\[[^\]]*\]:"
 syn region JAKMARK_comment matchgroup=JAKMARK_comment start="<!--" end="-->" keepend
 syn match JAKMARK_lineFeed "[ ]\{2\}$"
