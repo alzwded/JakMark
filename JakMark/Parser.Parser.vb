@@ -350,6 +350,10 @@ Partial Public Class Parser
                 Case Token.TokenType.Whitespace
                     _tokens.Remove(tok)
                     Return New Whitespace()
+                ' Issue#1
+                Case Token.TokenType.LineFeed
+                    _tokens.Remove(tok)
+                    Return New Whitespace()
                 Case Token.TokenType.CommentOpen
                     ConsumeComment()
                 Case Token.TokenType.Escape
