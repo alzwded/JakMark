@@ -33,7 +33,7 @@ Public Class GHMarkDown
             _stream.WriteLine()
         End If
         For Each li In list
-            _stream.WriteLine("<a name=""fn{0}""></a>{0}. {1} [Back](#fnref{0})", li.Key, li.Value)
+            _stream.WriteLine("{0}. {1} [Back](#fnref{0})", li.Key, li.Value)
         Next
     End Sub
 
@@ -49,7 +49,8 @@ Public Class GHMarkDown
 
     Public Sub Visit(node As Fenced) Implements IVisitor.Visit
         If Not _blankLine Then _stream.WriteLine()
-        _stream.Write("```")
+        _stream.WriteLine()
+        _stream.WriteLine("```")
         Indent()
         Dim r = New Regex("^")
         Dim text = r.Replace(node.Text, New String(" "c, _currentIndent * 2))
@@ -121,6 +122,7 @@ Public Class GHMarkDown
 
     Public Sub Visit(node As List) Implements IVisitor.Visit
         If Not _blankLine Then _stream.WriteLine()
+        _stream.WriteLine()
         If node.Numbered Then
             Dim idx = 1
 
@@ -148,6 +150,7 @@ Public Class GHMarkDown
                 If Not _blankLine Then _stream.WriteLine()
             Next
         End If
+        _stream.WriteLine()
         _blankLine = True
     End Sub
 
@@ -160,6 +163,7 @@ Public Class GHMarkDown
 
     Public Sub Visit(node As Table) Implements IVisitor.Visit
         If Not _blankLine Then _stream.WriteLine()
+        _stream.WriteLine()
         Indent()
         For Each i In node.Header
             _stream.Write("|{0}", i.Trim())
@@ -173,11 +177,22 @@ Public Class GHMarkDown
         For Each i In node.Lines
             Indent()
             For Each j In i
-                _stream.Write("|")
-                j.Accept(Me)
+                Dim originalStream = _stream
+                Using tempStream As New StringWriter()
+                    _stream = tempStream
+                    _stream.Write("|<span>")
+                    j.Accept(Me)
+
+                    Dim theText = tempStream.ToString()
+                    Console.WriteLine(theText)
+                    theText = theText.Replace("" & vbCrLf, "<br/>").Replace("" & vbLf, "<br/>") & "</span>"
+                    _stream = originalStream
+                    _stream.Write(theText)
+                End Using
             Next
             _stream.WriteLine("|")
         Next
+        _stream.WriteLine()
         _stream.WriteLine()
         _blankLine = True
     End Sub

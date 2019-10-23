@@ -31,7 +31,7 @@ Module MainModule
 
     Sub Usage()
         Dim appName = System.Environment.GetCommandLineArgs()(0)
-        Console.WriteLine("{0} v{1} Copyright (c) 2014,2017 Vlad Meșco", appName, My.Application.Info.Version.ToString())
+        Console.WriteLine("{0} v{1} Copyright (c) 2014,2017-2019 Vlad Meșco", appName, My.Application.Info.Version.ToString())
         Console.WriteLine("Usage:")
         Console.WriteLine("JakMark /?          print this message")
         Console.WriteLine("JakMark [options] [if] [of]   reads the JM file <if> and writes to <of>")
