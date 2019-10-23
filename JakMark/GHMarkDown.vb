@@ -54,7 +54,7 @@ Public Class GHMarkDown
         Indent()
         Dim r = New Regex("^")
         Dim text = r.Replace(node.Text, New String(" "c, _currentIndent * 2))
-        _stream.Write(text)
+        _stream.WriteLine(text)
         Indent()
         _stream.WriteLine("```")
         _stream.WriteLine()
@@ -184,7 +184,6 @@ Public Class GHMarkDown
                     j.Accept(Me)
 
                     Dim theText = tempStream.ToString()
-                    Console.WriteLine(theText)
                     theText = theText.Replace("" & vbCrLf, "<br/>").Replace("" & vbLf, "<br/>") & "</span>"
                     _stream = originalStream
                     _stream.Write(theText)
